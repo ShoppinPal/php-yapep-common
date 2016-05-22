@@ -1,0 +1,10 @@
+.settings
+.project
+.buildpath
+.idea
+/nbproject/*
+vendor
+composer.phar
+.DS_Store
+coverage.*
+private_*.conf

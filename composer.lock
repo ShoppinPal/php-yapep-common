@@ -1,0 +1,59 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "fbd3cb5a9d8f4b7cb2c1139133fc8e55",
+    "content-hash": "66c054034cfe74c6eb12ab1d397e3924",
+    "packages": [
+        {
+            "name": "szeber/yapep_base",
+            "version": "v0.3.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/szeber/yapep_base.git",
+                "reference": "4f2c3dc710f435e446a10871bc421c73dc08a064"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/szeber/yapep_base/zipball/4f2c3dc710f435e446a10871bc421c73dc08a064",
+                "reference": "4f2c3dc710f435e446a10871bc421c73dc08a064",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": ">=1.1.0",
+                "mockery/mockery": ">=0.7.2",
+                "phpunit/phpunit": "3.7.x-dev"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "YapepBase": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Zsolt Szeberenyi",
+                    "email": "szeber@yapep.org"
+                }
+            ],
+            "description": "YAPEP Base framework",
+            "time": "2016-05-07 04:23:20"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "szeber/yapep_base": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

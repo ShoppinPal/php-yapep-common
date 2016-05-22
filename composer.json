@@ -1,0 +1,14 @@
+{
+    "name": "shoppinpal/yapep-common",
+    "description": "Common extensions to the Yapep Base Framework, as used by shoppinpal",
+    "minimum-stability": "stable",
+    "license": "GPL-2.0",
+    "require": {
+        "szeber/yapep_base": "0.3.x-dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Shoppinpal\\YapepCommon\\": "src"
+        }
+    }
+}
