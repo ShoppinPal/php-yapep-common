@@ -95,7 +95,8 @@ abstract class BootstrapAbstract
      */
     protected function setupEnvironmentInDi()
     {
-        Application::getInstance()->getDiContainer()[DependencyInjectionHelper::KEY_ENVIRONMENT] = ENVIRONMENT;
+        $diContainer = Application::getInstance()->getDiContainer();
+        $diContainer[DependencyInjectionHelper::KEY_ENVIRONMENT] = ENVIRONMENT;
     }
 
     /**
