@@ -63,13 +63,24 @@ class SqsQueueConfigHandler
     {
         $isProduction = !in_array(DependencyInjectionHelper::getEnvironment(), [ENVIRONMENT_DEV, ENVIRONMENT_TEST]);
 
+        $redriveDeadLetterTargetArn = $this->getConfig($configName, 'redriveDeadLetterTargetArn');
+
+        if ($redriveDeadLetterTargetArn) {
+            // IF the dead letter queue is specified, replace the prefix and suffix templates
+            $redriveDeadLetterTargetArn = str_replace(
+                '{PREFIX}',
+                $this->getNamePrefix(),
+                str_replace('{SUFFIX}', $this->getNameSuffixByEnvironment(), $redriveDeadLetterTargetArn)
+            );
+        }
+
         return new SqsQueueConfigDo(
             $this->getConfig($configName, 'delaySeconds', 0),
             $this->getConfig($configName, 'maximumMessageSize', 262144),
             $this->getConfig($configName, 'messageRetentionPeriodSeconds', $isProduction ? 1209600 : 345600),
             $this->getConfig($configName, 'receiveMessageWaitTimeSeconds', 0),
             $this->getConfig($configName, 'redriveMaxReceiveCount'),
-            $this->getConfig($configName, 'redriveDeadLetterTargetArn'),
+            $redriveDeadLetterTargetArn,
             $this->getConfig($configName, 'visibilityTimeoutSeconds', 30)
         );
     }
