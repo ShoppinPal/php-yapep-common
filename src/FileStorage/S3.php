@@ -112,7 +112,7 @@ class S3
             $args['Expires'] = $expires;
         }
 
-        return $this->s3Client->putObject($args);
+        return $this->s3Client->createMultipartUpload($args);
 
     }
 
