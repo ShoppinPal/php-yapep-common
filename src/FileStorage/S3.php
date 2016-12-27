@@ -60,7 +60,7 @@ class S3
      * @param string                          $contentType
      * @param int|string|\DateTime            $expires
      *
-     * @return void
+     * @return \Aws\Result
      */
     public function putObject($key, $body, $acl = null, $contentType = null, $expires = null)
     {
@@ -82,7 +82,7 @@ class S3
             $args['Expires'] = $expires;
         }
 
-        $this->s3Client->putObject($args);
+        return $this->s3Client->putObject($args);
     }
 
     /**
@@ -91,7 +91,7 @@ class S3
      * @param string               $contentType
      * @param int|string|\DateTime $expires
      *
-     * @return void
+     * @return \Aws\Result
      */
     public function createMultipartUpload($key, $acl = null, $contentType = null, $expires = null)
     {
@@ -112,7 +112,7 @@ class S3
             $args['Expires'] = $expires;
         }
 
-        $this->s3Client->putObject($args);
+        return $this->s3Client->putObject($args);
 
     }
 
@@ -120,11 +120,11 @@ class S3
      * @param string $key
      * @param string $uploadId
      *
-     * @return void
+     * @return \Aws\Result
      */
     public function completeMultipartUpload($key, $uploadId)
     {
-        $this->s3Client->completeMultipartUpload([
+        return $this->s3Client->completeMultipartUpload([
             'Bucket'   => $this->bucketName,
             'Key'      => $key,
             'UploadId' => $uploadId,
@@ -135,11 +135,11 @@ class S3
      * @param string $key
      * @param string $uploadId
      *
-     * @return void
+     * @return \Aws\Result
      */
     public function abortMultipartUpload($key, $uploadId)
     {
-        $this->s3Client->abortMultipartUpload([
+        return $this->s3Client->abortMultipartUpload([
             'Bucket'   => $this->bucketName,
             'Key'      => $key,
             'UploadId' => $uploadId,
@@ -152,11 +152,11 @@ class S3
      * @param int                             $partNumber
      * @param string|resource|StreamInterface $body
      *
-     * @return void
+     * @return \Aws\Result
      */
     public function uploadPart($key, $uploadId, $partNumber, $body)
     {
-        $this->s3Client->uploadPart([
+        return $this->s3Client->uploadPart([
             'Bucket'     => $this->bucketName,
             'Key'        => $key,
             'UploadId'   => $uploadId,
