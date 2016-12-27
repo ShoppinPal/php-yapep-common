@@ -29,6 +29,9 @@ class S3
     /** @var string */
     protected $bucketName;
 
+    /**
+     * @param string $configName
+     */
     public function __construct($configName)
     {
         $config       = Config::getInstance();
@@ -83,8 +86,6 @@ class S3
     }
 
     /**
-     *
-     *
      * @param string               $key
      * @param string               $acl
      * @param string               $contentType
@@ -146,8 +147,6 @@ class S3
     }
 
     /**
-     *
-     *
      * @param string                          $key
      * @param string                          $uploadId
      * @param int                             $partNumber
@@ -166,4 +165,13 @@ class S3
         ]);
     }
 
+    /**
+     * @param string $key
+     *
+     * @return string
+     */
+    public function getObjectUrl($key)
+    {
+        return $this->s3Client->getObjectUrl($this->bucketName, $key);
+    }
 }
