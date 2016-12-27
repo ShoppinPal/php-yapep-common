@@ -119,15 +119,18 @@ class S3
     /**
      * @param string $key
      * @param string $uploadId
+     * @param array  $partData Array containing the etag and partnumber for each part.
+     *                         The format is [['ETag' => <etag>, 'PartNumber' => <partNumber]...]
      *
      * @return \Aws\Result
      */
-    public function completeMultipartUpload($key, $uploadId)
+    public function completeMultipartUpload($key, $uploadId, array $partData)
     {
         return $this->s3Client->completeMultipartUpload([
-            'Bucket'   => $this->bucketName,
-            'Key'      => $key,
-            'UploadId' => $uploadId,
+            'Bucket'          => $this->bucketName,
+            'Key'             => $key,
+            'UploadId'        => $uploadId,
+            'MultipartUpload' => ['Parts' => $partData],
         ]);
     }
 
