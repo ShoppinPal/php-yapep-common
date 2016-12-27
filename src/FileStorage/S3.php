@@ -170,7 +170,7 @@ class S3
 
     /**
      * @param string $key
-     * @param string|DateTime $expiration
+     * @param string|\DateTime $expiration
      *
      * @return string
      */
