@@ -26,6 +26,9 @@ class S3
     /** @var S3Client */
     protected $s3Client;
 
+    /** @var string */
+    protected $bucketName;
+
     public function __construct($configName)
     {
         $config       = Config::getInstance();
@@ -38,6 +41,8 @@ class S3
             ],
         ];
 
+        $this->bucketName = $config->get('commonResource.s3.' . $configName . '.bucketName');
+
         if ($region) {
             $clientConfig['region'] = $region;
         }
@@ -46,7 +51,6 @@ class S3
     }
 
     /**
-     * @param string                          $bucket
      * @param string                          $key
      * @param string|resource|StreamInterface $body
      * @param string                          $acl
@@ -55,12 +59,12 @@ class S3
      *
      * @return void
      */
-    public function putObject($bucket, $key, $body, $acl = null, $contentType = null, $expires = null)
+    public function putObject($key, $body, $acl = null, $contentType = null, $expires = null)
     {
         $args = [
-            'Bucket' => $bucket,
-            'Key' => $key,
-            'Body' => $body,
+            'Bucket' => $this->bucketName,
+            'Key'    => $key,
+            'Body'   => $body,
         ];
 
         if ($acl) {
@@ -81,7 +85,6 @@ class S3
     /**
      *
      *
-     * @param string               $bucket
      * @param string               $key
      * @param string               $acl
      * @param string               $contentType
@@ -89,11 +92,11 @@ class S3
      *
      * @return void
      */
-    public function createMultipartUpload($bucket, $key, $acl = null, $contentType = null, $expires = null)
+    public function createMultipartUpload($key, $acl = null, $contentType = null, $expires = null)
     {
         $args = [
-            'Bucket' => $bucket,
-            'Key' => $key,
+            'Bucket' => $this->bucketName,
+            'Key'    => $key,
         ];
 
         if ($acl) {
@@ -113,32 +116,30 @@ class S3
     }
 
     /**
-     * @param string $bucket
      * @param string $key
      * @param string $uploadId
      *
      * @return void
      */
-    public function completeMultipartUpload($bucket, $key, $uploadId)
+    public function completeMultipartUpload($key, $uploadId)
     {
         $this->s3Client->completeMultipartUpload([
-            'Bucket'   => $bucket,
+            'Bucket'   => $this->bucketName,
             'Key'      => $key,
             'UploadId' => $uploadId,
         ]);
     }
 
     /**
-     * @param string $bucket
      * @param string $key
      * @param string $uploadId
      *
      * @return void
      */
-    public function abortMultipartUpload($bucket, $key, $uploadId)
+    public function abortMultipartUpload($key, $uploadId)
     {
         $this->s3Client->abortMultipartUpload([
-            'Bucket'   => $bucket,
+            'Bucket'   => $this->bucketName,
             'Key'      => $key,
             'UploadId' => $uploadId,
         ]);
@@ -147,7 +148,6 @@ class S3
     /**
      *
      *
-     * @param string                          $bucket
      * @param string                          $key
      * @param string                          $uploadId
      * @param int                             $partNumber
@@ -155,10 +155,10 @@ class S3
      *
      * @return void
      */
-    public function uploadPart($bucket, $key, $uploadId, $partNumber, $body)
+    public function uploadPart($key, $uploadId, $partNumber, $body)
     {
         $this->s3Client->uploadPart([
-            'Bucket'     => $bucket,
+            'Bucket'     => $this->bucketName,
             'Key'        => $key,
             'UploadId'   => $uploadId,
             'PartNumber' => $partNumber,
