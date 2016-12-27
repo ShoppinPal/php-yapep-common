@@ -170,11 +170,19 @@ class S3
 
     /**
      * @param string $key
+     * @param string $expiration
      *
      * @return string
      */
-    public function getObjectUrl($key)
+    public function getSignedObjectUrl($key, $expiration)
     {
-        return $this->s3Client->getObjectUrl($this->bucketName, $key);
+        $command = $this->s3Client->getCommand('GetObject', [
+            'Bucket' => $this->bucketName,
+            'Key'    => $key
+        ]);
+
+        $request = $this->s3Client->createPresignedRequest($command, $expiration);
+
+        return (string)$request->getUri();
     }
 }
