@@ -20,6 +20,16 @@ use YapepBase\Storage\FileStorage;
 abstract class BootstrapAbstract
 {
 
+    /** Name of the GET param which indicates if testing mode should be used. */
+    const GET_PARAM_NAME_TESTING_MODE = 'isTestingMode';
+
+    /**
+     * Indicates if the current run is an internal test.
+     *
+     * @var bool
+     */
+    protected $isInnerTesting = false;
+
     /**
      * The autoloader instance.
      *
@@ -89,6 +99,39 @@ abstract class BootstrapAbstract
     }
 
     /**
+     * Checks if testing mode is requested and sets to application to the desired mode
+     */
+    protected function setTestingMode()
+    {
+        if (defined('IS_INNER_TESTING')) {
+            return;
+        }
+
+        if (ENVIRONMENT == ENVIRONMENT_DEV
+            &&
+            (
+                !empty($_REQUEST[self::GET_PARAM_NAME_TESTING_MODE])
+                || $this->checkIfCliIsTested()
+            )
+        ) {
+            $this->isInnerTesting = true;
+        }
+        /** Indicates if the current run is an inner test. */
+        define('IS_INNER_TESTING', $this->isInnerTesting);
+    }
+
+
+    /**
+     * Checks if the current run is a CLI script in inner testing mode.
+     *
+     * @return bool
+     */
+    protected function checkIfCliIsTested()
+    {
+        return !empty($_SERVER['argv']) && in_array('--isInnerTesting', $_SERVER['argv']);
+    }
+
+    /**
      * Sets the developer and environment in the DI.
      *
      * @return void
@@ -152,6 +195,9 @@ abstract class BootstrapAbstract
     {
         error_reporting(-1);
         date_default_timezone_set('UTC');
+        // TODO: Move these to the docker images [emul]
+        ini_set('xdebug.overload_var_dump', 0);
+        ini_set('xdebug.max_nesting_level', 5000);
     }
 
     /**
