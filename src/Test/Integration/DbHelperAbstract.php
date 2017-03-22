@@ -9,6 +9,8 @@ use YapepBase\Database\DbConnection;
 
 abstract class DbHelperAbstract
 {
+    const ORDER_DIRECTION_ASCENDING = 'asc';
+    const ORDER_DIRECTION_DESCENDING = 'desc';
 
     /**
      * @return DbConnection
@@ -37,12 +39,19 @@ abstract class DbHelperAbstract
     /**
      * @param string    $tableName
      * @param TableNode $table
+     * @param array     $order       Array where the key is the field name and the value is the direction
+     *                               {@uses self::ORDER_DIRECTION_*}
      */
-    public function assertTableContents($tableName, TableNode $table)
+    public function assertTableContents($tableName, TableNode $table, array $order)
     {
         $expectedRows = $table->getHash();
 
         $fields = array_keys($expectedRows[0]);
+
+        $orderByFields = [];
+        foreach ($order as $field => $direction) {
+            $orderByFields[] = $field . ' ' . $direction;
+        }
 
         $query
             = '
@@ -50,6 +59,8 @@ abstract class DbHelperAbstract
                 ' . implode(', ', $fields) . '
             FROM
                 ' . $tableName . '
+            ORDER BY
+                ' . implode(', ', $orderByFields) . '
         ';
         $entries = $this->getDbConnection()->query($query)->fetchAll();
         $this->formatArray($expectedRows);
