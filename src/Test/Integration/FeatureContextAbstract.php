@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace ShoppinPal\YapepCommon\Test\Integration;
 
@@ -127,7 +128,7 @@ abstract class FeatureContextAbstract implements Context
         return $errors;
     }
 
-    protected function callUri(string $url, string $method = HttpRequest::METHOD_HTTP_GET, array $params = array())
+    protected function callUri(string $url, string $method = HttpRequest::METHOD_HTTP_GET, array $params = [])
     {
         $getParams = [BootstrapAbstract::GET_PARAM_NAME_TESTING_MODE => 1];
 
@@ -158,7 +159,9 @@ abstract class FeatureContextAbstract implements Context
 
         }
 
-        $url .= '?' . http_build_query($getParams);
+        $url = $url
+            . (strpos($url, '?') === false ? '?' : '&')
+            . http_build_query($getParams);
         $curl = curl_init($url);
         curl_setopt_array($curl, $options);
         $result = curl_exec($curl);
@@ -188,6 +191,7 @@ abstract class FeatureContextAbstract implements Context
         return $this->responseHeaders;
     }
 
+
     protected function formatDataForPost(array $post, array &$output, string $paramNamePrefix = null)
     {
         foreach ($post as $key => $value) {
@@ -202,12 +206,8 @@ abstract class FeatureContextAbstract implements Context
         }
     }
 
-    /**
-     * @param string $logResourceName
-     *
-     * @return array
-     */
-    protected function getLoggedEntries($logResourceName)
+
+    protected function getLoggedEntries(string $logResourceName): array
     {
         $logPath = Config::getInstance()->get('resource.log.' . $logResourceName . '.path');
         $logEntries = (new FileHandlerPhp())->getAsString($logPath);
@@ -226,7 +226,7 @@ abstract class FeatureContextAbstract implements Context
     /**
      * @Then the http status of the response should be :statusCode
      */
-    public function theHttpStatusOfTheResponseShouldBe($statusCode)
+    public function theHttpStatusOfTheResponseShouldBe(int $statusCode)
     {
         \PHPUnit_Framework_Assert::assertContains(
             'HTTP/1.1 ' . $statusCode . ' ', $this->responseHeaders, 'Expected status code not received'

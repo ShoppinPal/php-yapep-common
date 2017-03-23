@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace ShoppinPal\YapepCommon\Bootstrap;
 
@@ -13,8 +14,6 @@ abstract class TestBootstrapAbstract extends BootstrapAbstract
 {
 
     /**
-     * The autoloader instance.
-     *
      * @var SimpleAutoloader
      */
     protected $autoloader;
@@ -23,10 +22,10 @@ abstract class TestBootstrapAbstract extends BootstrapAbstract
      * Does the bootstrap for test usage
      *
      * @param string $rootDir
-     *
-     * @return void
+     * @param string $vendorDir
+     * @param string $baseClassDir
      */
-    protected function testBootstrap($rootDir, $vendorDir, $baseClassDir)
+    protected function testBootstrap(string $rootDir, string $vendorDir, string $baseClassDir)
     {
         $this->initEnvironment();
         $this->defineEnvironmentConstants();
@@ -69,7 +68,7 @@ abstract class TestBootstrapAbstract extends BootstrapAbstract
     /**
      * @param string $rootDir
      */
-    protected function initApplicationsAutoloading($rootDir)
+    protected function initApplicationsAutoloading(string $rootDir)
     {
         $fileHandler = new FileHandlerPhp();
 

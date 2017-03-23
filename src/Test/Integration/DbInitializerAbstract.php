@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace ShoppinPal\YapepCommon\Test\Integration;
 
@@ -41,7 +42,7 @@ abstract class DbInitializerAbstract
      *
      * @throws \YapepBase\Exception\Exception
      */
-    protected function executeSql(array $dbConfig, $commandPart)
+    protected function executeSql(array $dbConfig, string $commandPart)
     {
         $charset      = empty($dbConfig['charset']) ? 'utf8' : $dbConfig['charset'];
         $testHostname = $dbConfig['host'];

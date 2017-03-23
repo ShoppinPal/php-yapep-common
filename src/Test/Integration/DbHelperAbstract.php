@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace ShoppinPal\YapepCommon\Test\Integration;
 
@@ -17,11 +18,8 @@ abstract class DbHelperAbstract
      */
     abstract public function getDbConnection();
 
-    /**
-     * @param string $tableName
-     * @param int    $expectedEntryCount
-     */
-    public function assertTableEntryCount($tableName, $expectedEntryCount)
+
+    public function assertTableEntryCount(string $tableName, int $expectedEntryCount)
     {
         $query
             = '
@@ -42,7 +40,7 @@ abstract class DbHelperAbstract
      * @param array     $order       Array where the key is the field name and the value is the direction
      *                               {@uses self::ORDER_DIRECTION_*}
      */
-    public function assertTableContents($tableName, TableNode $table, array $order)
+    public function assertTableContents(string $tableName, TableNode $table, array $order)
     {
         $expectedRows = $table->getHash();
 
@@ -75,19 +73,14 @@ abstract class DbHelperAbstract
      *
      * @return mixed
      */
-    public function getFromArray(array $array, $key, $default = null)
+    public function getFromArray(array $array, string $key, $default = null)
     {
         $result = array_key_exists($key, $array) ? $array[$key] : $default;
 
         return is_array($result) ? $result : $this->getFormattedValue($result);
     }
 
-    /**
-     * @param int $dayCount
-     *
-     * @return int
-     */
-    public function getTimeStampGivenDaysBefore($dayCount)
+    public function getTimeStampGivenDaysBefore(int $dayCount): int
     {
         return time() - (60 * 60 * 24 * $dayCount);
     }

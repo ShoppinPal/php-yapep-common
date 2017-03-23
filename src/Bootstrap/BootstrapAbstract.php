@@ -195,9 +195,18 @@ abstract class BootstrapAbstract
     {
         error_reporting(-1);
         date_default_timezone_set('UTC');
-        // TODO: Move these to the docker images [emul]
-        ini_set('xdebug.overload_var_dump', 0);
-        ini_set('xdebug.max_nesting_level', 5000);
+    }
+
+    protected function initDevelopmentEnvironment()
+    {
+        if (
+            ENVIRONMENT == ENVIRONMENT_DEV
+            &&
+            php_sapi_name() == 'cli'
+        ) {
+            ini_set('xdebug.overload_var_dump', 0);
+            ini_set('xdebug.max_nesting_level', 5000);
+        }
     }
 
     /**
@@ -228,6 +237,7 @@ abstract class BootstrapAbstract
         $this->initEnvironment();
         $this->defineEnvironmentConstants();
         $this->verifyEnvironment();
+        $this->initDevelopmentEnvironment();
 
         $this->setupSimpleAutoloader($vendorDir, $baseClassDir, $applicationRootDir . DIRECTORY_SEPARATOR . 'class');
         $this->setupEnvironmentInDi();

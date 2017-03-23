@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace ShoppinPal\YapepCommon\Test\Integration;
 
@@ -17,10 +18,9 @@ trait TDbContext
     /**
      * @Then the :tableName table should be empty
      */
-    public function theTableShouldBeEmpty($tableName)
+    public function theTableShouldBeEmpty(string $tableName)
     {
-        $query
-            = '
+        $query = '
             SELECT
                 *
             FROM
@@ -36,10 +36,9 @@ trait TDbContext
     /**
      * @Then the :tableName should contain :rowCount rows
      */
-    public function theTableShouldContainRows($tableName, $expectedRowCount)
+    public function theTableShouldContainRows(string $tableName, int $expectedRowCount)
     {
-        $query
-            = '
+        $query = '
             SELECT
                 COUNT(*)
             FROM
