@@ -5,13 +5,13 @@ namespace ShoppinPal\YapepCommon\Test\Integration;
 
 
 use Behat\Gherkin\Node\TableNode;
-use PHPUnit_Framework_Assert;
+use PHPUnit\Framework\Assert;
 use YapepBase\Database\DbConnection;
 
 abstract class DbHelperAbstract
 {
-    const ORDER_DIRECTION_ASCENDING = 'asc';
-    const ORDER_DIRECTION_DESCENDING = 'desc';
+    const ORDER_DIRECTION_ASCENDING = 'ASC';
+    const ORDER_DIRECTION_DESCENDING = 'DESC';
 
     /**
      * @return DbConnection
@@ -21,8 +21,7 @@ abstract class DbHelperAbstract
 
     public function assertTableEntryCount(string $tableName, int $expectedEntryCount)
     {
-        $query
-            = '
+        $query = '
             SELECT
                 COUNT(*)
             FROM
@@ -31,18 +30,18 @@ abstract class DbHelperAbstract
 
         $entryCount = $this->getDbConnection()->query($query)->fetchColumn();
 
-        PHPUnit_Framework_Assert::assertEquals($expectedEntryCount, $entryCount);
+        Assert::assertEquals($expectedEntryCount, $entryCount);
     }
 
     /**
      * @param string    $tableName
-     * @param TableNode $table
-     * @param array     $order       Array where the key is the field name and the value is the direction
-     *                               {@uses self::ORDER_DIRECTION_*}
+     * @param TableNode $expectedResult
+     * @param array     $order            Array where the key is the field name and the value is the direction
+     *                                    {@uses self::ORDER_DIRECTION_*}
      */
-    public function assertTableContents(string $tableName, TableNode $table, array $order)
+    public function assertTableContents(string $tableName, TableNode $expectedResult, array $order)
     {
-        $expectedRows = $table->getHash();
+        $expectedRows = $expectedResult->getHash();
 
         $fields = array_keys($expectedRows[0]);
 
@@ -51,8 +50,7 @@ abstract class DbHelperAbstract
             $orderByFields[] = $field . ' ' . $direction;
         }
 
-        $query
-            = '
+        $query = '
             SELECT
                 ' . implode(', ', $fields) . '
             FROM
@@ -63,7 +61,7 @@ abstract class DbHelperAbstract
         $entries = $this->getDbConnection()->query($query)->fetchAll();
         $this->formatArray($expectedRows);
 
-        PHPUnit_Framework_Assert::assertEquals($expectedRows, $entries);
+        Assert::assertEquals($expectedRows, $entries);
     }
 
     /**
@@ -82,7 +80,7 @@ abstract class DbHelperAbstract
 
     public function getTimeStampGivenDaysBefore(int $dayCount): int
     {
-        return time() - (60 * 60 * 24 * $dayCount);
+        return $this->getCurrentTimestamp() - (60 * 60 * 24 * $dayCount);
     }
 
     /**
@@ -110,19 +108,28 @@ abstract class DbHelperAbstract
         if ($value === '<null>') {
             return null;
         }
-        elseif (preg_match('#^<DATE: (.*)>$#', $value, $matches)) {
-            $time = $matches == 'NOW' ? time() : strtotime($matches[1]);
-            return date('Y-m-d', $time);
+        elseif (is_numeric($value)) {
+            return $value + 0;
         }
-        elseif (preg_match('#^<DATETIME: (.*)>$#', $value, $matches)) {
-            $time = $matches == 'NOW' ? time() : strtotime($matches[1]);
-            return date('Y-m-d H:i:s', $time);
+        elseif (is_string($value)) {
+            if (preg_match('#^<DATE: (.*)>$#', $value, $matches)) {
+                $currentTimestamp = $this->getCurrentTimestamp();
+                $time = $matches[1] == 'NOW' ? $currentTimestamp : strtotime($matches[1], $currentTimestamp);
+                return date('Y-m-d', $time);
+            }
+            elseif (preg_match('#^<DATETIME: (.*)>$#', (string)$value, $matches)) {
+                $currentTimestamp = $this->getCurrentTimestamp();
+                $time = $matches[1] == 'NOW' ? $currentTimestamp : strtotime($matches[1], $currentTimestamp);
+                return date('Y-m-d H:i:s', $time);
+            }
         }
 
-        if (is_numeric($value)) {
-            return ctype_digit($value) ? (int)$value : (float)$value;
-        }
 
         return $value;
+    }
+
+    protected function getCurrentTimestamp(): int
+    {
+        return time();
     }
 }

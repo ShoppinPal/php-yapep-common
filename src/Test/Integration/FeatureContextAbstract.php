@@ -5,6 +5,7 @@ namespace ShoppinPal\YapepCommon\Test\Integration;
 
 
 use Behat\Behat\Context\Context;
+use PHPUnit\Framework\Assert;
 use ShoppinPal\YapepCommon\Bootstrap\BootstrapAbstract;
 use ShoppinPal\YapepCommon\Storage\StorageFactory;
 use YapepBase\Config;
@@ -228,7 +229,7 @@ abstract class FeatureContextAbstract implements Context
      */
     public function theHttpStatusOfTheResponseShouldBe(int $statusCode)
     {
-        \PHPUnit_Framework_Assert::assertContains(
+        Assert::assertContains(
             'HTTP/1.1 ' . $statusCode . ' ', $this->responseHeaders, 'Expected status code not received'
         );
     }
