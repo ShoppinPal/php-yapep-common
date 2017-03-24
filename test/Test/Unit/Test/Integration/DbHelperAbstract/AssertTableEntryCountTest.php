@@ -32,7 +32,7 @@ class AssertTableEntryCountTest extends DbHelperAbstractTestAbstract
         ';
 
         $this->expectFetchColumn($query, 0);
-        $this->expectException('PHPUnit_Framework_ExpectationFailedException');
+        $this->expectException('\PhpUnit\Framework\ExpectationFailedException');
         $this->object->assertTableEntryCount('table_name', 2);
     }
 

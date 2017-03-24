@@ -5,8 +5,9 @@ declare(strict_types = 1);
 namespace Test\Unit;
 
 use Mockery;
+use PHPUnit\Framework\TestCase;
 
-class TestAbstract extends \PHPUnit_Framework_TestCase
+class TestAbstract extends TestCase
 {
 
     protected function tearDown()

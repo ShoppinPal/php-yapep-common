@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace ShoppinPal\YapepCommon\Test\Integration;
 
 
-use PHPUnit_Framework_Assert;
+use PHPUnit\Framework\Assert;
 use YapepBase\Database\DbConnection;
 
 trait TDbContext
@@ -29,7 +29,7 @@ trait TDbContext
         ';
         $result = $this->getDbConnection()->query($query)->fetch();
 
-        PHPUnit_Framework_Assert::assertFalse($result, 'The table "' . $tableName . '" is not empty!"');
+        Assert::assertFalse($result, 'The table "' . $tableName . '" is not empty!"');
     }
 
 
@@ -46,6 +46,6 @@ trait TDbContext
         ';
         $rowCount = $this->getDbConnection()->query($query)->fetchColumn();
 
-        PHPUnit_Framework_Assert::assertEquals($expectedRowCount, $rowCount);
+        Assert::assertEquals($expectedRowCount, $rowCount);
     }
 }

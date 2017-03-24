@@ -5,7 +5,7 @@ namespace ShoppinPal\YapepCommon\Test\Integration;
 
 
 use Behat\Gherkin\Node\TableNode;
-use PHPUnit_Framework_Assert;
+use PHPUnit\Framework\Assert;
 use YapepBase\Database\DbConnection;
 
 abstract class DbHelperAbstract
@@ -30,7 +30,7 @@ abstract class DbHelperAbstract
 
         $entryCount = $this->getDbConnection()->query($query)->fetchColumn();
 
-        PHPUnit_Framework_Assert::assertEquals($expectedEntryCount, $entryCount);
+        Assert::assertEquals($expectedEntryCount, $entryCount);
     }
 
     /**
@@ -61,7 +61,7 @@ abstract class DbHelperAbstract
         $entries = $this->getDbConnection()->query($query)->fetchAll();
         $this->formatArray($expectedRows);
 
-        PHPUnit_Framework_Assert::assertEquals($expectedRows, $entries);
+        Assert::assertEquals($expectedRows, $entries);
     }
 
     /**

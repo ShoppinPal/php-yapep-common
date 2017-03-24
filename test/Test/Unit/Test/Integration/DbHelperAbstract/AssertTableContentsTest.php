@@ -72,7 +72,7 @@ class AssertTableContentsTest extends DbHelperAbstractTestAbstract
         $this->expectFetchAll($query, $fetchResult);
         $expectedResult = (new TableNodeHelper())->createTableNodeByArrayOfArrays($differentExpectation);
 
-        $this->expectException('PHPUnit_Framework_ExpectationFailedException');
+        $this->expectException('\PhpUnit\Framework\ExpectationFailedException');
         $this->object->assertTableContents('table_name', $expectedResult, ['field1' => DbHelperAbstract::ORDER_DIRECTION_ASCENDING]);
     }
 
