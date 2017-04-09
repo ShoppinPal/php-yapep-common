@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Www\Exception;
 
@@ -13,6 +14,7 @@ class RestException extends Exception
     const CODE_UNAUTHORIZED = 'UnauthorizedError';
     const CODE_METHOD_NOT_SUPPORTED = 'MethodNotSupported';
     const CODE_INTERNAL_ERROR = 'InternalError';
+    const CODE_REQUEST_ERROR = 'RequestError';
 
     const MSG_PARAMETER_ERROR = 'An invalid parameter was sent to the endpoint, or a required parameter is missing';
     const MSG_UNAUTHENTICATED = 'This endpoint requires authentication but no "Authorization" header is sent, or the token is invalid';
@@ -20,6 +22,7 @@ class RestException extends Exception
     const MSG_UNAUTHORIZED = 'The authenticated account is not authorized to perform the requested action';
     const MSG_METHOD_NOT_SUPPORTED = 'The requested endpoint exists, but does not support the specified method';
     const MSG_INTERNAL_ERROR = 'An internal error occured while serving the request. The error has been logged, please try your request again later';
+    const MSG_REQUEST_ERROR = 'There is a problem with your request';
 
     const PARAM_ERROR_MISSING = 'missing';
     const PARAM_ERROR_DUPLICATE = 'duplicate';
@@ -32,7 +35,14 @@ class RestException extends Exception
     /** @var array */
     protected $params = [];
 
-    public function __construct($errorCode, $message = null, array $params = [], $code = 0, \Exception $previous = null, $data = null)
+    public function __construct(
+        string $errorCode,
+        ?string $message = null,
+        array $params = [],
+        int $code = 0,
+        ?\Exception $previous = null,
+        ?mixed $data = null
+    )
     {
         $this->errorCode = $errorCode;
         $this->params    = $params;
@@ -62,6 +72,9 @@ class RestException extends Exception
 
             case self::CODE_INTERNAL_ERROR:
                 return self::MSG_INTERNAL_ERROR;
+
+            case self::CODE_REQUEST_ERROR:
+                return self::MSG_REQUEST_ERROR;
         }
 
         return null;
@@ -70,6 +83,7 @@ class RestException extends Exception
     public function getDefaultHttpStatusCode(): ?int
     {
         switch ($this->errorCode) {
+            case self::CODE_REQUEST_ERROR:
             case self::CODE_PARAMETER_ERROR:
                 return 400;
 

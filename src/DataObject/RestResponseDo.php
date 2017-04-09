@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Www\DataObject;
 
@@ -13,13 +14,7 @@ class RestResponseDo
     /** @var mixed */
     public $payload;
 
-    /**
-     * @param string $header
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function addHeader($header, $value): RestResponseDo
+    public function addHeader(string $header, string $value): RestResponseDo
     {
         $this->headers[$header] = $value;
 

@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Www\Controller;
@@ -31,13 +30,26 @@ abstract class RestApiController extends HttpController
         $this->restResponseDo = new RestResponseDo();
     }
 
+    /**
+     * @inheritdoc
+     *
+     * This method will trigger an E_USER_ERROR error if an uncaught exception happens while processing the request.
+     * These errors should not be treated as fatals, or the proper error will not be returned to the client.
+     */
     public function run($action)
     {
         try {
             $this->requestBody = file_get_contents('php://input');
 
-            if ($this->requestBody) {
+            if (empty($this->requestBody)) {
                 $this->requestData = json_decode($this->requestBody, true);
+
+                if (false === $this->requestData) {
+                    throw new RestException(
+                        RestException::CODE_REQUEST_ERROR,
+                        'Failed to decode the request as valid JSON. JSON decode error: ' . json_last_error_msg()
+                    );
+                }
             }
 
             // Initialize the content type to JSON
