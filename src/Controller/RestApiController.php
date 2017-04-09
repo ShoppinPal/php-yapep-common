@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Www\Controller;
+namespace ShoppinPal\YapepCommon\Controller;
 
-use Www\DataObject\RestResponseDo;
-use Www\Exception\RestException;
+use ShoppinPal\YapepCommon\DataObject\RestResponseDo;
+use ShoppinPal\YapepCommon\Exception\RestException;
 use YapepBase\Config;
 use YapepBase\Controller\HttpController;
 use YapepBase\Exception\ControllerException;
