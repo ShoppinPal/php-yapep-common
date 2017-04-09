@@ -8,6 +8,8 @@ use ShoppinPal\YapepCommon\Exception\RestException;
 use YapepBase\Config;
 use YapepBase\Controller\HttpController;
 use YapepBase\Exception\ControllerException;
+use YapepBase\Exception\HttpException;
+use YapepBase\Exception\RedirectException;
 use YapepBase\Mime\MimeType;
 use YapepBase\Request\IRequest;
 use YapepBase\Response\IResponse;
@@ -82,6 +84,9 @@ abstract class RestApiController extends HttpController
             $view->setContentType($this->response->getContentType());
 
             $this->response->setBody($view);
+        } catch (HttpException|RedirectException $e) {
+            // This is a standard HTTP exception or a redirect exception, simply re-throw it
+            throw $e;
         } catch (\Exception $e) {
             trigger_error(
                 'Unhandled exception of ' . get_class($e) . ' while serving api response. Error: ' . $e->getMessage(),
