@@ -4,7 +4,8 @@
     "minimum-stability": "stable",
     "license": "GPL-2.0",
     "require": {
-        "szeber/yapep_base": "0.3.x-dev"
+        "szeber/yapep_base": "0.3.x-dev",
+        "php": ">=7.1"
     },
     "autoload": {
         "psr-4": {
