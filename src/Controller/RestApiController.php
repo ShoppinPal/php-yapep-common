@@ -41,7 +41,7 @@ abstract class RestApiController extends HttpController
         try {
             $this->requestBody = file_get_contents('php://input');
 
-            if (empty($this->requestBody)) {
+            if (!empty($this->requestBody)) {
                 $this->requestData = json_decode($this->requestBody, true);
 
                 if (false === $this->requestData) {
