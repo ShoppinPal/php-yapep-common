@@ -17,6 +17,10 @@ use YapepBase\View\RestTemplate;
 
 abstract class RestApiController extends HttpController
 {
+    const RESPONSE_FIELD_ERROR_CODE = 'errorCode';
+    const RESPONSE_FIELD_ERROR_DESCRIPTION = 'errorDescription';
+    const RESPONSE_FIELD_PARAMS = 'params';
+
     /** @var RestResponseDo */
     protected $restResponseDo;
 
@@ -149,12 +153,12 @@ abstract class RestApiController extends HttpController
     private function getErrorResponse(string $errorCode, string $errorDetails, array $params = []): array
     {
         $result = [
-            'errorCode' => $errorCode,
-            'errorDescription' => $errorDetails,
+            self::RESPONSE_FIELD_ERROR_CODE => $errorCode,
+            self::RESPONSE_FIELD_ERROR_DESCRIPTION => $errorDetails,
         ];
 
         if (!empty($params)) {
-            $result['params'] = $params;
+            $result[self::RESPONSE_FIELD_PARAMS] = $params;
         }
 
         return $result;
