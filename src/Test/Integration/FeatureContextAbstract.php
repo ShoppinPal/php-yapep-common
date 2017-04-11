@@ -8,6 +8,8 @@ use Behat\Behat\Context\Context;
 use PHPUnit\Framework\Assert;
 use ShoppinPal\YapepCommon\Bootstrap\BootstrapAbstract;
 use ShoppinPal\YapepCommon\Storage\StorageFactory;
+use YapepBase\Communication\CurlHttpRequest;
+use YapepBase\Communication\CurlHttpRequestResult;
 use YapepBase\Config;
 use YapepBase\Exception\Exception;
 use YapepBase\File\FileHandlerPhp;
@@ -129,58 +131,50 @@ abstract class FeatureContextAbstract implements Context
         return $errors;
     }
 
-    protected function callUri(string $url, string $method = HttpRequest::METHOD_HTTP_GET, array $params = [])
+    protected function callUrl(string $url, string $method = CurlHttpRequest::METHOD_GET, array $params = [], $storeResponse = true): CurlHttpRequestResult
     {
-        $getParams = [BootstrapAbstract::GET_PARAM_NAME_TESTING_MODE => 1];
-
-        $options = [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HEADER         => true,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => false,
-        ];
+        $params[BootstrapAbstract::GET_PARAM_NAME_TESTING_MODE] = 1;
         $this->sentParams = $params;
-
-        switch ($method) {
-            case HttpRequest::METHOD_HTTP_GET:
-                $options[CURLOPT_HTTPGET] = true;
-                $getParams = array_merge($params, $getParams);
-                break;
-
-            case HttpRequest::METHOD_HTTP_POST:
-                $options[CURLOPT_POST] = true;
-                $formattedParameters = array();
-                $this->formatDataForPost($params, $formattedParameters);
-                $options[CURLOPT_POSTFIELDS] = $formattedParameters;
-                break;
-
-            default:
-                throw new \Exception('Invalid method given: ' . $method);
-                break;
-
-        }
-
-        $url = $url
-            . (strpos($url, '?') === false ? '?' : '&')
-            . http_build_query($getParams);
-        $curl = curl_init($url);
-        curl_setopt_array($curl, $options);
-        $result = curl_exec($curl);
-
-        if (false === $result) {
-            $this->error = curl_error($curl);
-
-            throw new \Exception('Curl Error:' . curl_error($curl));
-        }
         $this->calledUrl = $url;
 
-        $info = curl_getinfo($curl);
-        curl_close($curl);
+        $request = new CurlHttpRequest();
+        $request->setUrl($url);
+        $request->setMethod($method);
+        $request->setPayload($params, CurlHttpRequest::PAYLOAD_TYPE_QUERY_STRING_ARRAY);
 
-        $this->responseBody = (string)substr($result, $info['header_size']);
-        $this->responseHeaders = (string)substr($result, 0, $info['header_size']);
+        $result = $request->send();
+        if ($storeResponse) {
+            $this->responseHeaders = $result->getResponseHeaders();
+            $this->responseBody = $result->getResponseBody();
+        }
+
+        return $result;
     }
 
+    protected function callRestApi(string $url, string $method = CurlHttpRequest::METHOD_GET, array $params = [], $storeResponse = true): CurlHttpRequestResult
+    {
+        $url = $url
+            . (strpos($url, '?') === false ? '?' : '&')
+            . BootstrapAbstract::GET_PARAM_NAME_TESTING_MODE . '=1';
+
+        $request = new CurlHttpRequest();
+        $request->setUrl($url);
+        $request->setMethod($method);
+        $request->addHeader('Content-Type: application/json');
+        if (!empty($this->sessionId)) {
+            $request->addHeader('Authorization: Session ' . $this->sessionId);
+        }
+
+        $request->setPayload(json_encode($params), CurlHttpRequest::PAYLOAD_TYPE_RAW);
+
+        $result = $request->send();
+        if ($storeResponse) {
+            $this->responseHeaders = $result->getResponseHeaders();
+            $this->responseBody = $result->getResponseBody();
+        }
+
+        return $result;
+    }
 
     protected function getResponseBody(): array
     {
