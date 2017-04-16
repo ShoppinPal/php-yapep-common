@@ -47,6 +47,10 @@ class FileLogger extends LoggerAbstract
 
         $this->fileHandler = new FileHandlerPhp();
 
+        if (!$this->fileHandler->checkIsPathExists($this->fileHandler->getParentDirectory($this->filePath))) {
+            $this->fileHandler->makeDirectory($this->fileHandler->getParentDirectory($this->filePath), 0755, true);
+        }
+
         if (!$this->fileHandler->checkIsPathExists($this->filePath)) {
             $this->fileHandler->touch($this->filePath);
         }
