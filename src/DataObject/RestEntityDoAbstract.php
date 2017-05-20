@@ -5,7 +5,7 @@ namespace ShoppinPal\YapepCommon\DataObject;
 
 use Carbon\Carbon;
 
-abstract class ApiDoAbstract
+abstract class RestEntityDoAbstract
 {
     private static $classPropertyCache = [];
 
