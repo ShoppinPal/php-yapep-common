@@ -8,12 +8,12 @@ use Behat\Behat\Context\Context;
 use PHPUnit\Framework\Assert;
 use ShoppinPal\YapepCommon\Bootstrap\BootstrapAbstract;
 use ShoppinPal\YapepCommon\Storage\StorageFactory;
+use YapepBase\Application;
 use YapepBase\Communication\CurlHttpRequest;
 use YapepBase\Communication\CurlHttpRequestResult;
 use YapepBase\Config;
 use YapepBase\Exception\Exception;
 use YapepBase\File\FileHandlerPhp;
-use YapepBase\Request\HttpRequest;
 
 
 /**
@@ -67,6 +67,7 @@ abstract class FeatureContextAbstract implements Context
         $this->getDbInitializer()->initDatabase();
         $this->initLogs();
         $this->cleanUpStorages();
+        Application::getInstance()->getDiContainer()->getViewDo()->clear();
     }
 
     /**
