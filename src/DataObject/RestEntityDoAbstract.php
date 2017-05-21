@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ShoppinPal\YapepCommon\DataObject;
 
 use Carbon\Carbon;
+use YapepBase\Exception\Exception;
 
 abstract class RestEntityDoAbstract
 {
@@ -63,10 +64,12 @@ abstract class RestEntityDoAbstract
      * @param mixed $value
      *
      * @return mixed
+     *
+     * @throws Exception
      */
     private static function getSimpleValue($value)
     {
-        if ($value instanceof ApiDoAbstract) {
+        if ($value instanceof RestEntityDoAbstract) {
             return $value->getContents();
         } elseif ($value instanceof Carbon) {
             return $value->toIso8601String();
@@ -77,6 +80,8 @@ abstract class RestEntityDoAbstract
                 return $value->__toString();
             } elseif (method_exists($value, 'toString')) {
                 return $value->toString();
+            } else {
+                throw new Exception('Object of type ' . get_class($value) . ' can not be converted to a simple value');
             }
         } elseif (is_array($value)) {
             $result = [];
@@ -87,6 +92,5 @@ abstract class RestEntityDoAbstract
         } else {
             return $value;
         }
-
     }
 }
