@@ -31,9 +31,9 @@ abstract class RestEntityDoAbstract
     {
         $className = get_class($this);
 
-        if (!isset(static::$classPropertyCache[$className])) {
+        if (!isset(self::$classPropertyCache[$className])) {
             $objectVars = array_keys(get_object_vars($this));
-            static::$classPropertyCache[$className] = array_diff(
+            self::$classPropertyCache[$className] = array_diff(
                 $objectVars,
                 array_merge($this->ignoredProperties, ['ignoredProperties'])
             );
@@ -41,7 +41,7 @@ abstract class RestEntityDoAbstract
 
         $results = [];
 
-        foreach (static::$classPropertyCache[$className] as $property) {
+        foreach (self::$classPropertyCache[$className] as $property) {
             $results[$property] = $this->getSimpleValue($this->$property);
         }
 
@@ -57,7 +57,7 @@ abstract class RestEntityDoAbstract
      */
     public static function getArrayContentAsSerializableArray(array $array): array
     {
-        return static::getSimpleValue($array);
+        return self::getSimpleValue($array);
     }
 
     /**
@@ -70,7 +70,7 @@ abstract class RestEntityDoAbstract
     private static function getSimpleValue($value)
     {
         if ($value instanceof RestEntityDoAbstract) {
-            return $value->getContents();
+            return $value->getSerializableContents();
         } elseif ($value instanceof Carbon) {
             return $value->toIso8601String();
         } elseif ($value instanceof \DateTime) {
@@ -86,7 +86,7 @@ abstract class RestEntityDoAbstract
         } elseif (is_array($value)) {
             $result = [];
             foreach ($value as $key => $arrayValue) {
-                $result[$key] = static::getSimpleValue($arrayValue);
+                $result[$key] = self::getSimpleValue($arrayValue);
             }
             return $result;
         } else {
