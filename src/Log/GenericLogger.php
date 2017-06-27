@@ -6,7 +6,7 @@ namespace ShoppinPal\YapepCommon\Log;
 use ShoppinPal\YapepCommon\Log\Message\GenericMessage;
 use YapepBase\Log\ILogger;
 
-class LogHelper
+class GenericLogger
 {
     /** @var ILogger  */
     protected $logger;
@@ -25,9 +25,9 @@ class LogHelper
      *
      * @param string $defaultLogTag
      *
-     * @return LogHelper
+     * @return GenericLogger
      */
-    public function cloneWithNewDefaultLogTag(string $defaultLogTag): LogHelper
+    public function cloneWithNewDefaultLogTag(string $defaultLogTag): GenericLogger
     {
         return new static($this->logger, $defaultLogTag);
     }
