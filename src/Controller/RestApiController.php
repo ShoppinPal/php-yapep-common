@@ -61,12 +61,19 @@ abstract class RestApiController extends HttpController
             // Initialize the content type to JSON
             $this->response->setContentType(MimeType::JSON);
 
-            $methodName = $this->getActionPrefix() . $action;
+            $actionPrefix = $this->getActionPrefix();
+            $methodName   = $actionPrefix . $action;
             if (!method_exists($this, $methodName)) {
-                throw new RestException(
-                    RestException::CODE_METHOD_NOT_SUPPORTED,
-                    'The method ' . $this->request->getMethod() . ' is not supported by this endpoint'
-                );
+                if ('options' != $actionPrefix) {
+                    throw new RestException(
+                        RestException::CODE_METHOD_NOT_SUPPORTED,
+                        'The method ' . $this->request->getMethod() . ' is not supported by this endpoint'
+                    );
+                }
+
+                // This is an options request, so return allowed methods
+                $this->response->setHeader('Allow', implode(', ', $this->getValidMethodsForAction($action)));
+                return;
             }
 
             parent::run($action);
