@@ -6,7 +6,7 @@ use Aws\Ses\SesClient;
 use YapepBase\Config;
 use YapepBase\Exception\ParameterException;
 
-class Ses
+class Ses implements IEmail
 {
 
     protected $sesClient;
@@ -28,7 +28,11 @@ class Ses
             ],
         ];
 
-        $this->senderEmail = $config->get('commonResource.ses.' . $configName . '.senderEmail');
+        $this->senderEmail = $config->get(
+            'commonResource.email.' . $configName . '.senderEmail',
+            // Fallback for legacy config option. Will be removed in a later release!
+            $config->get('commonResource.ses.' . $configName . '.senderEmail')
+        );
 
         if ($region) {
             $clientConfig['region'] = $region;
@@ -49,8 +53,15 @@ class Ses
      * @return mixed|null
      * @throws ParameterException
      */
-    public function sendEmail($to, $subject, $htmlBody = null, $textBody = null, array $ccAddresses = [], $bccAddresses = [], $charset = 'UTF-8')
-    {
+    public function sendEmail(
+        $to,
+        $subject,
+        $htmlBody = null,
+        $textBody = null,
+        array $ccAddresses = [],
+        $bccAddresses = [],
+        $charset = 'UTF-8'
+    ) {
         if (empty($htmlBody) && empty($textBody)) {
             throw new ParameterException('Either the HTML or the text body must be set');
         }
