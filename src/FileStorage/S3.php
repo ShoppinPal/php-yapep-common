@@ -44,6 +44,15 @@ class S3
             ],
         ];
 
+        $endpoint = $config->get('commonResource.s3.' . $configName . '.endpoint');
+        if ($endpoint) {
+            $clientConfig['endpoint'] = $endpoint;
+        }
+
+        if ($config->get('commonResource.s3.' . $configName . '.usePathStyleEndpoint')) {
+            $clientConfig['use_path_style_endpoint'] = true;
+        }
+
         $this->bucketName = $config->get('commonResource.s3.' . $configName . '.bucketName');
 
         if ($region) {
