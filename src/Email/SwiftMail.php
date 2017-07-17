@@ -19,12 +19,12 @@ class SwiftMail implements IEmail
         $this->senderEmail = $config->get('commonResource.email.' . $configName . '.senderEmail');
 
         $this->transport = new \Swift_SmtpTransport(
-            $config->get('commonResource.swiftMailer.' . $configName . 'smtpHost'),
-            $config->get('commonResource.swiftMailer.' . $configName . 'smtpPort', 25)
+            $config->get('commonResource.swiftMailer.' . $configName . '.smtpHost'),
+            $config->get('commonResource.swiftMailer.' . $configName . '.smtpPort', 25)
         );
 
-        $username = $config->get('commonResource.swiftMailer.' . $configName . 'smtpUsername', '');
-        $password = $config->get('commonResource.swiftMailer.' . $configName . 'smtpPassword', '');
+        $username = $config->get('commonResource.swiftMailer.' . $configName . '.smtpUsername', '');
+        $password = $config->get('commonResource.swiftMailer.' . $configName . '.smtpPassword', '');
 
         if ($username && $password) {
             $this->transport->setUsername($username)
