@@ -36,7 +36,7 @@ class SqsQueue implements IQueue
 
         $message = reset($messages);
 
-        return new QueueMessageDo($message->getUnserializedBody(), $message->getReceiptHandle());
+        return new QueueMessage($message->getUnserializedBody(), $message->getReceiptHandle());
     }
 
     public function deleteMessage($queueConfigName, $deleteId)

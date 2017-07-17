@@ -20,7 +20,7 @@ interface IQueue
      * @param string $queueConfigName
      * @param int    $waitTimeSeconds The number of seconds to wait for if it's supported by the queue backend.
      *
-     * @return null|QueueMessageDo The message or NULL if none is available.
+     * @return null|QueueMessage The message or NULL if none is available.
      */
     public function receiveMessage($queueConfigName, $waitTimeSeconds = 0);
 

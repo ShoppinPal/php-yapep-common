@@ -2,7 +2,7 @@
 
 namespace ShoppinPal\YapepCommon\Queue;
 
-class QueueMessageDo
+class QueueMessage
 {
     /** @var mixed */
     protected $messageBody;

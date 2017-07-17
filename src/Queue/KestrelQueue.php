@@ -41,7 +41,7 @@ class KestrelQueue implements IQueue
 
         $result = $this->storage->get(implode('/', $getParts));
 
-        return empty($result) ? null : new QueueMessageDo(json_decode($result));
+        return empty($result) ? null : new QueueMessage(json_decode($result));
     }
 
     public function deleteMessage($queueConfigName, $deleteId)

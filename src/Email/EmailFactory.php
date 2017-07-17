@@ -43,7 +43,7 @@ class EmailFactory
                 break;
 
             case self::TYPE_SWIFTMAIL:
-                $queue = new SwiftMailEmail($configName);
+                $queue = new SwiftMail($configName);
                 break;
 
             default:

@@ -4,7 +4,7 @@ namespace ShoppinPal\YapepCommon\Email;
 
 use YapepBase\Config;
 
-class SwiftMailEmail implements IEmail
+class SwiftMail implements IEmail
 {
     /** @var \Swift_SmtpTransport */
     protected $transport;
