@@ -15,8 +15,17 @@ class KestrelQueue implements IQueue
 
     public function __construct($configName)
     {
-        $storageName = Config::getInstance()->get('commonResource.kestrel.' . $configName . '.storageName');
-        $this->storage = StorageFactory::get($storageName);
+        $config                              = Config::getInstance();
+        $storageName                         = $config->get('commonResource.kestrel.' . $configName . '.storageName');
+        $this->storage                       = StorageFactory::get($storageName);
+        $this->reliableReads                 = $config->get(
+            'commonResource.kestrel.' . $configName . '.reliableReads',
+            true
+        );
+        $this->autoClosePreviousReliableRead = $config->get(
+            'commonResource.kestrel.' . $configName . '.autoClosePreviousReliableRead',
+            false
+        );
     }
 
     public function sendMessage($queueConfigName, $messageBody)
@@ -41,7 +50,7 @@ class KestrelQueue implements IQueue
 
         $result = $this->storage->get(implode('/', $getParts));
 
-        return empty($result) ? null : new QueueMessage(json_decode($result));
+        return empty($result) ? null : new QueueMessage(json_decode($result, true));
     }
 
     public function deleteMessage($queueConfigName, $deleteId)
