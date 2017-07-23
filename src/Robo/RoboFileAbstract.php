@@ -113,17 +113,13 @@ abstract class RoboFileAbstract extends Tasks
      *
      * @return void
      */
-    protected function updateEnvFile($environment = null, $doUpdate = false)
+    protected function updateEnvFile($doUpdate = false)
     {
         $envPath     = $this->getEnvFilePath();
         $examplePath = $this->getEnvExamplePath();
         $env         = (new Loader([$envPath]))->parse()->toArray();
         $example     = (new Loader([$examplePath]))->parse()->toArray();
         $additions   = [];
-
-        if ($environment) {
-            $example['ENVIRONMENT_NAME'] = $environment;
-        }
 
         foreach ($example as $key => $value) {
             if (!empty($value) && empty($env[$key])) {
@@ -139,7 +135,7 @@ abstract class RoboFileAbstract extends Tasks
                 $content .= "\n$key=$value\n";
             }
 
-            if ($doUpdate) {
+            if ($doUpdate && 'dev' === ($env['ENVIRONMENT_NAME'] ?? null)) {
                 file_put_contents($envPath, $content);
             } else {
                 $this->say('Your .env file is outdated, please update it with the following content:');
