@@ -14,40 +14,43 @@ abstract class RoboFileAbstract extends Tasks
     public function buildEnvironment($opts = ['environment|e' => null])
     {
         $envPath = $this->getEnvFilePath();
-        if (!file_exists($envPath)) {
-            $validEnvironments = [
-                'dev',
-                'test',
-                'staging',
-                'production'
-            ];
 
-            if (!empty($opts['environment']) && in_array($opts['environment'], $validEnvironments)) {
-                $environment = $opts['environment'];
-            } else {
-                do {
-                    $environment = $this->askDefault(
-                        'Please select the environment (' . implode(', ', $validEnvironments) . ')',
-                        'dev'
-                    );
-                } while (!in_array($environment, $validEnvironments));
-            }
-
-            $envFileContent = '';
-
-            foreach (file($this->getEnvExamplePath()) as $line) {
-                if (strstr($line, 'ENVIRONMENT_NAME')) {
-                    $envFileContent .= 'ENVIRONMENT_NAME=' . $environment . "\n";
-                } else {
-                    $envFileContent .= $line;
-                }
-            }
-
-            file_put_contents($this->getEnvFilePath(), $envFileContent);
-
-            $this->say('Set current environment to ' . $environment . ' and created .env file.');
-            $this->say('Do not forget to fix the credentials in it!');
+        if (file_exists($envPath)) {
+            return;
         }
+
+        $validEnvironments = [
+            'dev',
+            'test',
+            'staging',
+            'production'
+        ];
+
+        if (!empty($opts['environment']) && in_array($opts['environment'], $validEnvironments)) {
+            $environment = $opts['environment'];
+        } else {
+            do {
+                $environment = $this->askDefault(
+                    'Please select the environment (' . implode(', ', $validEnvironments) . ')',
+                    'dev'
+                );
+            } while (!in_array($environment, $validEnvironments));
+        }
+
+        $envFileContent = '';
+
+        foreach (file($this->getEnvExamplePath()) as $line) {
+            if (strstr($line, 'ENVIRONMENT_NAME')) {
+                $envFileContent .= 'ENVIRONMENT_NAME=' . $environment . "\n";
+            } else {
+                $envFileContent .= $line;
+            }
+        }
+
+        file_put_contents($this->getEnvFilePath(), $envFileContent);
+
+        $this->say('Set current environment to ' . $environment . ' and created .env file.');
+        $this->say('Do not forget to fix the credentials in it!');
     }
 
     /**
