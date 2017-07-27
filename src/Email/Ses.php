@@ -28,11 +28,7 @@ class Ses implements IEmail
             ],
         ];
 
-        $this->senderEmail = $config->get(
-            'commonResource.email.' . $configName . '.senderEmail',
-            // Fallback for legacy config option. Will be removed in a later release!
-            $config->get('commonResource.ses.' . $configName . '.senderEmail')
-        );
+        $this->senderEmail = $config->get('commonResource.email.' . $configName . '.senderEmail');
 
         if ($region) {
             $clientConfig['region'] = $region;
