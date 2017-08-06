@@ -224,7 +224,9 @@ abstract class RoboFileAbstract extends Tasks
     protected function getHttpBasicAuthBlock($host, $helpText)
     {
         $this->say('No authentication information for ' . $host
-            . '. Authentication needs to be set up via http-basic auth');
+            . '. Authentication needs to be set up via http-basic auth. There is no verification of the information'
+            . ' entered below. If you entered the wrong credentials, please edit the auth.json file manually to correct'
+            . ' the problem.');
 
         $this->io()->block($helpText);
 
