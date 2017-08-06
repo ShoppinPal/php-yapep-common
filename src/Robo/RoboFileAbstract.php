@@ -1,6 +1,7 @@
 <?php
 namespace ShoppinPal\YapepCommon\Robo;
 
+use Exception;
 use josegonzalez\Dotenv\Loader;
 use Robo\Tasks;
 
@@ -190,6 +191,50 @@ abstract class RoboFileAbstract extends Tasks
     protected function isMemcachedInstalled()
     {
         return class_exists('\Memcached');
+    }
+
+    protected function requireAuthJson($baseDir, $type, $host, $helpText)
+    {
+        $authJsonContent = [];
+        $authJsonPath    = $baseDir . '/auth.json';
+        if (file_exists($authJsonPath)) {
+            $authJsonContent = json_decode(file_get_contents($authJsonPath), true);
+            if (is_array($authJsonContent)) {
+                if (!empty($authJsonContent[$type][$host])) {
+                    // The auth.json file contains the required host and type, so no need to create it.
+                    return;
+                }
+            } else {
+                $authJsonContent = [];
+            }
+        }
+
+        switch ($type) {
+            case 'http-basic':
+                $authJsonContent[$type][$host] = $this->getHttpBasicAuthBlock($host, $helpText);
+                break;
+
+            default:
+                throw new Exception('Unsupported auth type: ' . $type);
+        }
+
+        file_put_contents($authJsonPath, json_encode($authJsonContent, JSON_PRETTY_PRINT));
+    }
+
+    protected function getHttpBasicAuthBlock($host, $helpText)
+    {
+        $this->say('No authentication information for ' . $host
+            . '. Authentication needs to be set up via http-basic auth');
+
+        $this->io()->block($helpText);
+
+        $username = $this->ask('Please enter your username');
+        $password = $this->ask('Please enter your password', true);
+
+        return [
+            'username' => $username,
+            'password' => $password,
+        ];
     }
 
     /**
