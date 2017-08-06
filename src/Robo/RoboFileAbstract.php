@@ -193,7 +193,16 @@ abstract class RoboFileAbstract extends Tasks
         return class_exists('\Memcached');
     }
 
-    protected function requireAuthJson($baseDir, $type, $host, $helpText)
+    /**
+     * @param string $baseDir
+     * @param string $type
+     * @param string $host
+     * @param string $helpText
+     *
+     * @return void
+     * @throws Exception
+     */
+    protected function requireEntryInAuthJson($baseDir, $type, $host, $helpText = '')
     {
         $authJsonContent = [];
         $authJsonPath    = $baseDir . '/auth.json';
@@ -225,7 +234,13 @@ abstract class RoboFileAbstract extends Tasks
         file_put_contents($authJsonPath, json_encode($authJsonContent, JSON_PRETTY_PRINT));
     }
 
-    protected function getHttpBasicAuthBlock($host, $helpText)
+    /**
+     * @param string $host
+     * @param string $helpText
+     *
+     * @return array
+     */
+    private function getHttpBasicAuthBlock($host, $helpText = '')
     {
         $this->say(
             'No authentication information for ' . $host
@@ -247,14 +262,21 @@ abstract class RoboFileAbstract extends Tasks
         ];
     }
 
-    protected function getBitbucketOauthBlock($host, $helpText)
+    /**
+     * @param string $host
+     * @param string $helpText
+     *
+     * @return array
+     */
+    private function getBitbucketOauthBlock($host, $helpText = '')
     {
         $this->say(
             'No authentication information for ' . $host
             . '. Authentication needs to be set up via bitbucket oauth. If you have not done so previously, create an'
             . ' oauth consumer in your bitbucket settings. Give it a name and a callback URL (say http://example.com).'
             . ' Ensure the consumer has Repositories read permission. Then enter your consumer key and secret below for'
-            . ' the consumer'
+            . ' the consumer. The entered information is not checked now, but only during composer install. If you made'
+            . ' a mistake edit the auth.json file manually.'
         );
 
         if (!empty($helpText)) {
