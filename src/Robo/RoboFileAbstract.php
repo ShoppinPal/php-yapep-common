@@ -214,6 +214,10 @@ abstract class RoboFileAbstract extends Tasks
                 $authJsonContent[$type][$host] = $this->getHttpBasicAuthBlock($host, $helpText);
                 break;
 
+            case 'bitbucket-oauth':
+                $authJsonContent[$type][$host] = $this->getBitbucketOauthBlock($host, $helpText);
+                break;
+
             default:
                 throw new Exception('Unsupported auth type: ' . $type);
         }
@@ -223,12 +227,16 @@ abstract class RoboFileAbstract extends Tasks
 
     protected function getHttpBasicAuthBlock($host, $helpText)
     {
-        $this->say('No authentication information for ' . $host
+        $this->say(
+            'No authentication information for ' . $host
             . '. Authentication needs to be set up via http-basic auth. There is no verification of the information'
             . ' entered below. If you entered the wrong credentials, please edit the auth.json file manually to correct'
-            . ' the problem.');
+            . ' the problem.'
+        );
 
-        $this->io()->block($helpText);
+        if (!empty($helpText)) {
+            $this->io()->block($helpText);
+        }
 
         $username = $this->ask('Please enter your username');
         $password = $this->ask('Please enter your password', true);
@@ -236,6 +244,29 @@ abstract class RoboFileAbstract extends Tasks
         return [
             'username' => $username,
             'password' => $password,
+        ];
+    }
+
+    protected function getBitbucketOauthBlock($host, $helpText)
+    {
+        $this->say(
+            'No authentication information for ' . $host
+            . '. Authentication needs to be set up via bitbucket oauth. If you have not done so previously, create an'
+            . ' oauth consumer in your bitbucket settings. Give it a name and a callback URL (say http://example.com).'
+            . ' Ensure the consumer has Repositories read permission. Then enter your consumer key and secret below for'
+            . ' the consumer'
+        );
+
+        if (!empty($helpText)) {
+            $this->io()->block($helpText);
+        }
+
+        $key    = $this->ask('Please enter your consumer key');
+        $secret = $this->ask('Please enter your consumer secret');
+
+        return [
+            'consumer-key'    => $key,
+            'consumer-secret' => $secret,
         ];
     }
 
