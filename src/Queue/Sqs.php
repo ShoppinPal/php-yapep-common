@@ -60,6 +60,11 @@ class Sqs
             ],
         ];
 
+        $endpoint = $config->get('commonResource.sqs.' . $configName . '.endpoint');
+        if ($endpoint) {
+            $clientConfig['endpoint'] = $endpoint;
+        }
+
         if ($region) {
             $clientConfig['region'] = $region;
         }
