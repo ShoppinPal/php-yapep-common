@@ -152,7 +152,13 @@ abstract class FeatureContextAbstract implements Context
         return $result;
     }
 
-    protected function callRestApi(string $url, string $method = CurlHttpRequest::METHOD_GET, array $params = [], $storeResponse = true): CurlHttpRequestResult
+    protected function callRestApi(
+        string $url,
+        string $method = CurlHttpRequest::METHOD_GET,
+        array $params = [],
+        array $headers = [],
+        $storeResponse = true
+    ): CurlHttpRequestResult
     {
         $url = $url
             . (strpos($url, '?') === false ? '?' : '&')
@@ -164,6 +170,9 @@ abstract class FeatureContextAbstract implements Context
         $request->addHeader('Content-Type: application/json');
         if (!empty($this->sessionId)) {
             $request->addHeader('Authorization: Session ' . $this->sessionId);
+        }
+        foreach ($headers as $header) {
+            $request->addHeader($header);
         }
 
         $request->setPayload(json_encode($params), CurlHttpRequest::PAYLOAD_TYPE_RAW);
