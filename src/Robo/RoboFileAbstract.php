@@ -101,13 +101,137 @@ abstract class RoboFileAbstract extends Tasks
      */
     public function generateApiDoc()
     {
-        foreach ($this->getApplicationBasePaths() as $basePath) {
+        foreach ($this->getApplicationBasePaths() as $applicationName => $basePath) {
+            $jsonPath = $basePath . '/www/swagger.json';
             $this->taskExec('vendor/bin/swagger')
                 ->arg($basePath)
                 ->option('--output')
-                ->arg($basePath . '/www/swagger.json')
+                ->arg($jsonPath)
                 ->run();
+
+            $this->say('Adding default errors to the api doc');
+
+            $jsonContent = json_decode(file_get_contents($jsonPath), true);
+
+            $jsonContent = $this->addErrorsToSwaggerJsonContent($applicationName, $jsonContent);
+
+            file_put_contents($jsonPath, json_encode($jsonContent, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
         }
+    }
+
+    /**
+     * Adds default errors to the Swagger JSON content
+     *
+     * @param string $applicationName
+     * @param array  $jsonContent
+     *
+     * @return array
+     */
+    protected function addErrorsToSwaggerJsonContent($applicationName, array $jsonContent)
+    {
+        $usedErrorCodes = [];
+
+        foreach ($jsonContent['paths'] ?? [] as $path => $methods) {
+            foreach ($methods as $method => $methodContent) {
+                $errorCodes = array_merge(
+                    $this->getImpliedApiErrorCodes($applicationName, $method),
+                    $methodContent['x-errors'] ?? []
+                );
+
+                foreach ($errorCodes as $errorCode) {
+                    $usedErrorCodes[$errorCode] = 1;
+
+                    // This status code is already documented, don't override
+                    if (isset($methodContent['responses'][(string)$errorCode])) {
+                        continue;
+                    }
+
+                    $methodContent['responses'][(string)$errorCode] = [
+                        'description' => $this->getApiErrorDocDescriptionByErrorCode($errorCode),
+                        'schema' => [
+                            '$ref' => '#/definitions/Error' . $errorCode,
+                        ]
+                    ];
+                }
+                if (isset($methodContent['x-errors'])) {
+                    unset($methodContent['x-errors']);
+                }
+
+                $jsonContent['paths'][$path][$method] = $methodContent;
+            }
+        }
+
+        foreach ($usedErrorCodes as $errorCode => $value) {
+            if (!isset($jsonContent['definitions']['Error' . $errorCode])) {
+                $jsonContent['definitions']['Error' . $errorCode] = $this->getApiDocErrorResponseDefinitionForCode(
+                    $errorCode
+                );
+            }
+        }
+
+        return $jsonContent;
+    }
+
+    /**
+     * Returns the api error description based on the status code.
+     *
+     * @param int $errorCode
+     *
+     * @return string
+     */
+    protected function getApiErrorDocDescriptionByErrorCode($errorCode)
+    {
+        switch ((int)$errorCode) {
+            case 400:
+                return 'Bad request, the request parameters are invalid';
+                
+            case 401:
+                return 'Authorization required for calling this endpoint';
+                
+            case 402:
+                return 'Billing error, payment required';
+                
+            case 403:
+                return 'The authenticated user has no permission for this operation';
+                
+            case 404:
+                return 'Entity not found';
+
+            default:
+                return 'Error';
+        }
+    }
+
+    /**
+     * Returns the error response Swagger definition for the specified error code.
+     *
+     * @param int $errorCode
+     *
+     * @return array
+     */
+    protected function getApiDocErrorResponseDefinitionForCode($errorCode)
+    {
+        $errorDefinition = [
+            'properties' => [
+                'errorCode'    => [
+                    'type'        => 'string',
+                    'description' => 'The code of the error'
+                ],
+                'errorMessage' => [
+                    'type'        => 'string',
+                    'description' => 'Description of the error',
+                ]
+            ]
+        ];
+
+        if (400 == $errorCode) {
+            $errorDefinition['properties']['params'] = [
+                'type'        => 'object',
+                'description' => 'List of the invalid params where the property is the parameter name and the value is the describing the issue'
+            ];
+        }
+
+        return $errorDefinition;
     }
 
     /**
@@ -293,7 +417,8 @@ abstract class RoboFileAbstract extends Tasks
     }
 
     /**
-     * Returns the base paths for all applications in the project
+     * Returns the base paths for all applications in the project as an associative array where the key is the name
+     * of the application, value is the base path.
      *
      * @return array
      */
@@ -312,4 +437,14 @@ abstract class RoboFileAbstract extends Tasks
      * @return string
      */
     abstract protected function getEnvExamplePath();
+
+    /**
+     * Returns the errors that are possible for all endpoints of the api, and not needed to be specifically documented
+     *
+     * @param string $applicationName
+     * @param string $method
+     *
+     * @return array
+     */
+    abstract protected function getImpliedApiErrorCodes($applicationName, $method);
 }
