@@ -15,6 +15,48 @@ trait TDbContext
      */
     abstract public function getDbConnection();
 
+    protected function createApiClient(string $token)
+    {
+        $insert = '
+            INSERT INTO
+                client
+            SET 
+                name       = :name,
+                token      = :token,
+                is_enabled = 1,
+                created_at = NOW()
+        ';
+        $params = [
+            'name'  => 'test' . rand(0, 9999999),
+            'token' => $token
+        ];
+
+        $this->getDbConnection()->query($insert, $params);
+    }
+
+
+    protected function createEntity(string $tableName, array $rows)
+    {
+        foreach ($rows as $row) {
+            $queryParams = [];
+            $sets = [];
+
+            foreach ($row as $columnName => $value) {
+                $queryParams[$columnName] = $value;
+                $sets[] = $columnName . ' = :' . $columnName;
+            }
+
+            $insert = '
+                INSERT INTO
+                    ' . $tableName . '
+                SET
+                    ' . implode(', ', $sets) . '
+            ';
+
+            $this->getDbConnection()->query($insert, $queryParams);
+        }
+    }
+
     /**
      * @Then the :tableName table should be empty
      */
