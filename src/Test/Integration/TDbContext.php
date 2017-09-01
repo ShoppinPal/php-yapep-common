@@ -15,25 +15,6 @@ trait TDbContext
      */
     abstract public function getDbConnection();
 
-    protected function createApiClient(string $token)
-    {
-        $insert = '
-            INSERT INTO
-                client
-            SET 
-                name       = :name,
-                token      = :token,
-                is_enabled = 1,
-                created_at = NOW()
-        ';
-        $params = [
-            'name'  => 'test' . rand(0, 9999999),
-            'token' => $token
-        ];
-
-        $this->getDbConnection()->query($insert, $params);
-    }
-
 
     protected function createEntity(string $tableName, array $rows)
     {
