@@ -48,6 +48,7 @@ class Psr3Logger extends LoggerAbstract
             'application' => $this->getApplicationName(),
             'hostname'    => php_uname('n'),
             'language'    => 'php',
+            'pid'         => getmypid(),
             'sapi'        => PHP_SAPI,
             'tag'         => $message->getTag(),
             'fields'      => $message->getFields(),
