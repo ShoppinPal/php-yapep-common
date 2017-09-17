@@ -25,7 +25,7 @@ class JsonFormatter extends \Monolog\Formatter\JsonFormatter
                 'channel'    => $record['channel'],
                 'level'      => $record['level'],
                 'level_name' => $record['level_name'],
-                'time'       => $record['datetime'],
+                'time'       => $record['datetime']->format(DateTime::ATOM),
                 'extra'      => $record['extra'],
                 'v'          => 0,
             ]
