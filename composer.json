@@ -6,7 +6,8 @@
     "require": {
         "szeber/yapep_base": "0.3.x-dev",
         "php": ">=7.1",
-        "nesbot/carbon": "^1.21"
+        "nesbot/carbon": "^1.21",
+        "psr/log": "^1.0.0"
     },
     "autoload": {
         "psr-4": {
@@ -20,10 +21,12 @@
         "mockery/mockery": "^0.9.9",
         "swiftmailer/swiftmailer": "^6.0",
         "consolidation/robo": "^1.0.6",
-        "josegonzalez/dotenv": "^3.0.0"
+        "josegonzalez/dotenv": "^3.0.0",
+        "monolog/monolog": "^1.23.0"
     },
     "suggest": {
         "aws/aws-sdk-php": "Allows using SQS for queueing",
+        "monolog/monolog": "Allows using the LineFormatter",
         "swiftmailer/swiftmailer": "Allows using the swiftmailer library for e-mail sending"
     }
 }
