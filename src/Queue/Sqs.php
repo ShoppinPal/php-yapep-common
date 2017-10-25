@@ -194,6 +194,23 @@ class Sqs
     }
 
     /**
+     * Purges all the messages from the queue
+     *
+     * @param string $queueConfigName
+     *
+     * @return void
+     */
+    public function purge($queueConfigName)
+    {
+        $queueName  = $this->sqsQueueConfigHandler->getNameForQueue($queueConfigName);
+        $queueUrl   = $this->getQueueUrlAndCreateIfNotExists($queueName, $queueConfigName);
+
+        $this->sqsClient->purgeQueue([
+            'QueueUrl' => $queueUrl
+        ]);
+    }
+
+    /**
      * Returns the queue URL for the specified queue, and it will create it if it doesn't exist.
      *
      * @param string $queueName
