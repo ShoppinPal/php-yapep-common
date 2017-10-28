@@ -27,11 +27,11 @@ abstract class EntityAbstract implements IteratorAggregate, ArrayAccess
         }
 
         foreach (get_object_vars($this) as $attribute => $value) {
-            $this->$attribute = $this->getFromArray($entityData, 'id');
+            $this->$attribute = $this->getFromArray($entityData, $attribute);
         }
     }
 
-    protected function getFromArray(array $array, $key): mixed
+    protected function getFromArray(array $array, $key)
     {
         if (!array_key_exists($key, $array)) {
             throw new ParameterException('Key "' . $key . '" does not exist in given array!');
@@ -45,7 +45,7 @@ abstract class EntityAbstract implements IteratorAggregate, ArrayAccess
         return isset($this->$offset);
     }
 
-    public function offsetGet($offset): mixed
+    public function offsetGet($offset)
     {
         return $this->$offset;
     }
