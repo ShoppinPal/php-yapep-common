@@ -24,4 +24,14 @@ class DependencyInjectionHelper
     {
         return Application::getInstance()->getDiContainer()->offsetGet(self::KEY_ENVIRONMENT);
     }
+
+    /**
+     * Returns whether the environment is set.
+     *
+     * @return bool
+     */
+    public static function hasEnvironment()
+    {
+        return Application::getInstance()->getDiContainer()->offsetExists(self::KEY_ENVIRONMENT);
+    }
 }
