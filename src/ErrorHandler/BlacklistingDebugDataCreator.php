@@ -28,6 +28,13 @@ class BlacklistingDebugDataCreator extends DebugDataCreator
         $context = $this->removeBlackListedClassesFromArray($context);
         $backTrace = $this->removeBlackListedClassesFromArray($backTrace);
 
+        // Remove any values from the $_SERVER superglobal that's set in the environment
+        foreach (array_keys($_SERVER) as $key) {
+            if (getenv($key)) {
+                unset($_SERVER[$key]);
+            }
+        }
+
         return parent::getDebugData(
             $errorId,
             $errorMessage,

@@ -4,7 +4,7 @@ namespace ShoppinPal\YapepCommon\Config;
 
 use YapepBase\Exception\Exception;
 
-abstract class BaseProjectConfig
+abstract class ProjectConfigAbstract
 {
     /**
      * @param string $configName
@@ -16,11 +16,6 @@ abstract class BaseProjectConfig
      */
     public static function getEnvConfigValue($configName, $default = null)
     {
-        // Remove all config values from the $_SERVER superglobal so we don't have secrets in the logs
-        if (isset($_SERVER[$configName])) {
-            unset($_SERVER[$configName]);
-        }
-
         if (false !== getenv($configName)) {
             return getenv($configName);
         }
