@@ -2,6 +2,7 @@
 namespace ShoppinPal\YapepCommon\Log;
 
 use Psr\Log\LoggerInterface;
+use ShoppinPal\YapepCommon\Helper\DependencyInjectionHelper;
 use YapepBase\Config;
 use YapepBase\Log\LoggerAbstract;
 use YapepBase\Log\Message\IMessage;
@@ -10,6 +11,7 @@ class Psr3Logger extends LoggerAbstract
 {
 
     const APPLICATION_UNKNOWN = 'UNKNOWN';
+    const ENVIRONMENT_UNKNOWN = 'UNKNOWN';
 
     /** @var string */
     protected $programName;
@@ -43,11 +45,16 @@ class Psr3Logger extends LoggerAbstract
      */
     protected function logMessage(IMessage $message)
     {
+        $environment = DependencyInjectionHelper::hasEnvironment()
+            ? DependencyInjectionHelper::getEnvironment()
+            : self::ENVIRONMENT_UNKNOWN;
+
         $context = [
             'program'     => $this->programName,
             'application' => $this->getApplicationName(),
             'hostname'    => php_uname('n'),
             'language'    => 'php',
+            'environment' => $environment,
             'pid'         => getmypid(),
             'sapi'        => PHP_SAPI,
             'tag'         => $message->getTag(),
