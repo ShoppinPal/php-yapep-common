@@ -60,6 +60,13 @@ abstract class FeatureContextAbstract implements Context
     abstract protected function getStorageNames();
 
     /**
+     * @see initScenario()
+     */
+    protected function doAfterInitScenario()
+    {
+    }
+
+    /**
      * @BeforeScenario
      */
     public function initScenario()
@@ -68,6 +75,7 @@ abstract class FeatureContextAbstract implements Context
         $this->initLogs();
         $this->cleanUpStorages();
         Application::getInstance()->getDiContainer()->getViewDo()->clear();
+        $this->doAfterInitScenario();
     }
 
     /**
