@@ -128,7 +128,7 @@ abstract class BootstrapAbstract
      */
     protected function checkIfCliIsTested()
     {
-        return !empty($_SERVER['argv']) && in_array('--isInnerTesting', $_SERVER['argv']);
+        return !empty($_SERVER['argv']) && in_array('--is-inner-testing', $_SERVER['argv']);
     }
 
     /**
