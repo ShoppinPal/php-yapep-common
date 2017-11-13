@@ -22,6 +22,9 @@ abstract class BootstrapAbstract
 
     /** Name of the GET param which indicates if testing mode should be used. */
     const GET_PARAM_NAME_TESTING_MODE = 'isTestingMode';
+    /** Name of the CLI param which indicates if testing mode should be used. */
+    const CLI_PARAM_NAME_TESTING_MODE = 'is-inner-testing';
+
 
     /**
      * Indicates if the current run is an internal test.
@@ -128,7 +131,7 @@ abstract class BootstrapAbstract
      */
     protected function checkIfCliIsTested()
     {
-        return !empty($_SERVER['argv']) && in_array('--isInnerTesting', $_SERVER['argv']);
+        return !empty($_SERVER['argv']) && in_array('--' . self::CLI_PARAM_NAME_TESTING_MODE, $_SERVER['argv']);
     }
 
     /**
