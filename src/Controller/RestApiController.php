@@ -27,8 +27,8 @@ abstract class RestApiController extends HttpController
     /** @var string */
     private $requestBody;
 
-    /** @var array|null */
-    private $requestData;
+    /** @var array */
+    private $requestData = [];
 
     public function __construct(IRequest $request, IResponse $response)
     {
@@ -45,21 +45,21 @@ abstract class RestApiController extends HttpController
     public function run($action)
     {
         try {
+            $this->response->setContentType(MimeType::JSON);
+
             $this->requestBody = file_get_contents('php://input');
 
             if (!empty($this->requestBody)) {
-                $this->requestData = json_decode($this->requestBody, true);
+                $requestData = json_decode($this->requestBody, true);
 
-                if (false === $this->requestData) {
+                if ($requestData === null && !empty(json_last_error())) {
                     throw new RestException(
                         RestException::CODE_REQUEST_ERROR,
                         'Failed to decode the request as valid JSON. JSON decode error: ' . json_last_error_msg()
                     );
                 }
+                $this->requestData = (array)$requestData;
             }
-
-            // Initialize the content type to JSON
-            $this->response->setContentType(MimeType::JSON);
 
             $actionPrefix = $this->getActionPrefix();
             $methodName   = $actionPrefix . $action;
@@ -194,7 +194,7 @@ abstract class RestApiController extends HttpController
         return $this->requestBody;
     }
 
-    protected function getRequestData(): ?array
+    protected function getRequestData(): array
     {
         return $this->requestData;
     }
