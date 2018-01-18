@@ -90,6 +90,11 @@ class RequestHandler
         return json_decode($this->responseBody, true);
     }
 
+    public function getResponseBodyRaw(): string
+    {
+        return $this->responseBody;
+    }
+
     public function getResponseHeaders(): string
     {
         return $this->responseHeaders;
