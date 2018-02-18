@@ -101,11 +101,17 @@ abstract class RoboFileAbstract extends Tasks
      */
     public function generateApiDoc()
     {
-        foreach ($this->getApplicationBasePaths() as $applicationName => $basePath) {
-            $jsonPath = $basePath . '/www/swagger.json';
-            $this->taskExec('vendor/bin/swagger')
-                ->arg($basePath)
-                ->option('--output')
+        foreach ($this->getApplicationBasePaths() as $applicationName => $basePaths) {
+            $basePaths = (array)$basePaths;
+            $basePath  = reset($basePaths);
+            $jsonPath  = $basePath . '/www/swagger.json';
+            $task      = $this->taskExec('vendor/bin/swagger');
+
+            foreach ($basePaths as $path) {
+                $task->arg($path);
+            }
+
+            $task->option('--output')
                 ->arg($jsonPath)
                 ->run();
 
