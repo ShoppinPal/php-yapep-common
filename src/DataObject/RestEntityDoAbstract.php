@@ -8,8 +8,6 @@ use YapepBase\Exception\Exception;
 
 abstract class RestEntityDoAbstract
 {
-    private static $classPropertyCache = [];
-
     protected $ignoredProperties = [];
 
     /**
@@ -29,19 +27,15 @@ abstract class RestEntityDoAbstract
      */
     public function getSerializableContents(): array
     {
-        $className = get_class($this);
-
-        if (!isset(self::$classPropertyCache[$className])) {
-            $objectVars = array_keys(get_object_vars($this));
-            self::$classPropertyCache[$className] = array_diff(
-                $objectVars,
-                array_merge($this->ignoredProperties, ['ignoredProperties'])
-            );
-        }
+        $currentProperties = array_keys(get_object_vars($this));
+        $properties        = array_diff(
+            $currentProperties,
+            array_merge($this->ignoredProperties, ['ignoredProperties'])
+        );
 
         $results = [];
 
-        foreach (self::$classPropertyCache[$className] as $property) {
+        foreach ($properties as $property) {
             $results[$property] = $this->getSimpleValue($this->$property);
         }
 
