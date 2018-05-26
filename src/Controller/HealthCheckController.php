@@ -24,8 +24,6 @@ class HealthCheckController extends RestApiController
         $config = Config::getInstance();
         $apiKey = $config->get('common.healthCheck.key');
 
-//        var_dump($apiKey, $this->request->getServer('HTTP_X_API_KEY')); exit;
-
         if (empty($apiKey) || $apiKey !== $this->request->getServer('HTTP_X_API_KEY')) {
             throw new RestException(RestException::CODE_UNAUTHORIZED);
         }
