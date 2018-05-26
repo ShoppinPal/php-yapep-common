@@ -10,6 +10,14 @@ use YapepBase\Database\MysqlConnection;
 use YapepBase\Exception\DatabaseException;
 use YapepBase\Exception\ParameterException;
 
+/**
+ * Health check for database connections
+ *
+ * Supported config options:
+ * * connectionName: Name of the DB connection to check
+ * * checkRo: Bool value for whether the RO connection should be checked. Defaults to TRUE
+ * * checkRw: Bool value for whether the RW connection should be checked. Defaults to TRUE
+ */
 class DbHealthCheck implements IHealthCheck
 {
     public function checkServiceHealth(array $configOptions = []): void

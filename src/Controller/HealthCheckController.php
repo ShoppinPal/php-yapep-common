@@ -16,6 +16,11 @@ class HealthCheckController extends RestApiController
     }
 
     /**
+     * Runs the health check action
+     *
+     * Uses the system.project.name and application.name config options, and requires setting an API key as
+     * the common.healthCheck.key config value
+     *
      * @throws ConfigException
      * @throws RestException
      */

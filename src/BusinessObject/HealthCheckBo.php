@@ -13,6 +13,13 @@ use YapepBase\Config;
 use YapepBase\Exception\ConfigException;
 use YapepBase\Exception\ParameterException;
 
+/**
+ * Health check business logic
+ *
+ * Supported config options:
+ * * applicationCommon.healthCheck.definitions: <type> => <className> format definitions of health checks for overriding existing checks or adding new ones
+ * * applicationCommon.healthCheck.checks: the list of checks in [<type> => [<name> => <options>]...] format
+ */
 class HealthCheckBo extends BoAbstract
 {
     protected const BUILT_IN_HEALTH_CHECKS = [
@@ -26,7 +33,6 @@ class HealthCheckBo extends BoAbstract
      */
     public function performHealthCheck(bool &$haveErrors = false): array
     {
-        $config            = Config::getInstance();
         $healthCheckConfig = $this->getHealthCheckConfig();
         $healthChecks      = $this->getHealthChecks();
         $results           = [];
@@ -35,7 +41,7 @@ class HealthCheckBo extends BoAbstract
             $healthCheck = $this->getHealthCheck($healthChecks, $type);
 
             foreach ($checks as $name => $configOptions) {
-                $this->performSingleHealthCheck($type, $name, $configOptions, $healthCheck, $results);
+                $haveErrors |= $this->performSingleHealthCheck($type, $name, $configOptions, $healthCheck, $results);
             }
         }
 
@@ -49,7 +55,7 @@ class HealthCheckBo extends BoAbstract
     {
         return array_merge(
             self::BUILT_IN_HEALTH_CHECKS,
-            Config::getInstance()->get('applicationCommon.healthCheckDefinitions', [])
+            Config::getInstance()->get('applicationCommon.healthCheck.definitions', [])
         );
     }
 
@@ -102,7 +108,8 @@ class HealthCheckBo extends BoAbstract
         $configOptions,
         IHealthCheck $healthCheck,
         array &$results
-    ): void {
+    ): bool {
+        $error = false;
         $fullName = $type . '.' . $name;
 
         if (!is_array($configOptions)) {
@@ -127,7 +134,11 @@ class HealthCheckBo extends BoAbstract
                 'status' => 'ERROR',
                 'error'  => $e->getMessage(),
             ];
+
+            $error = true;
         }
+
+        return $error;
     }
 
 }
