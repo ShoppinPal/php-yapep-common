@@ -218,7 +218,7 @@ class Sqs
      *
      * @return string
      */
-    protected function getQueueUrlAndCreateIfNotExists($queueName, $queueConfigName)
+    public function getQueueUrlAndCreateIfNotExists($queueName, $queueConfigName)
     {
         if (isset($this->queueUrlCache[$queueName])) {
             return $this->queueUrlCache[$queueName];
