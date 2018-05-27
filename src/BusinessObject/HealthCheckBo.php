@@ -41,6 +41,8 @@ class HealthCheckBo extends BoAbstract
             $healthCheck = $this->getHealthCheck($healthChecks, $type);
 
             foreach ($checks as $name => $configOptions) {
+                $fullName = $type . '.' . $name;
+
                 if (!is_array($configOptions)) {
                     throw new ConfigException(
                         'Invalid health check config for ' . $fullName . '. The config should be an array.'
