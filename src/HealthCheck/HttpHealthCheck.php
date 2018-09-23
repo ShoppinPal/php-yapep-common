@@ -14,12 +14,6 @@ use YapepBase\Exception\ParameterException;
 
 class HttpHealthCheck implements IHealthCheck
 {
-    /**
-     * @throws ParameterException
-     * @throws HealthCheckException
-     * @throws ConfigException
-     * @throws CurlException
-     */
     public function checkServiceHealth(array $configOptions): void
     {
         $url          = $this->getUrl($configOptions);
@@ -50,10 +44,6 @@ class HttpHealthCheck implements IHealthCheck
         return true;
     }
 
-    /**
-     * @throws ConfigException
-     * @throws ParameterException
-     */
     protected function getUrl(array $configOptions): string
     {
         if (isset($configOptions['url'])) {
@@ -75,9 +65,6 @@ class HttpHealthCheck implements IHealthCheck
         return $url;
     }
 
-    /**
-     * @throws CurlException
-     */
     protected function sendRequest(array $configOptions, string $url): CurlHttpRequestResult
     {
         $request = Application::getInstance()
@@ -94,10 +81,6 @@ class HttpHealthCheck implements IHealthCheck
         return $request->send();
     }
 
-    /**
-     * @throws HealthCheckException
-     * @throws CurlException
-     */
     protected function checkStatus(array $configOptions, CurlHttpRequestResult $result, string $url): void
     {
         if (!empty($result->getError())) {
@@ -113,9 +96,6 @@ class HttpHealthCheck implements IHealthCheck
         }
     }
 
-    /**
-     * @throws HealthCheckException
-     */
     protected function checkJson(array $configOptions, $responseBody): void
     {
         if (!empty($configOptions['expectedJson'])) {
@@ -143,9 +123,6 @@ class HttpHealthCheck implements IHealthCheck
         }
     }
 
-    /**
-     * @throws HealthCheckException
-     */
     protected function checkBody(array $configOptions, $responseBody): void
     {
         if (isset($configOptions['expectedResponse'])) {
