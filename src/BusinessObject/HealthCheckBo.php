@@ -5,7 +5,9 @@ namespace ShoppinPal\YapepCommon\BusinessObject;
 
 use ShoppinPal\YapepCommon\Exception\HealthCheckException;
 use ShoppinPal\YapepCommon\HealthCheck\DbHealthCheck;
+use ShoppinPal\YapepCommon\HealthCheck\HttpHealthCheck;
 use ShoppinPal\YapepCommon\HealthCheck\IHealthCheck;
+use ShoppinPal\YapepCommon\HealthCheck\S3HealthCheck;
 use ShoppinPal\YapepCommon\HealthCheck\SqsHealthCheck;
 use ShoppinPal\YapepCommon\HealthCheck\StorageHealthCheck;
 use YapepBase\BusinessObject\BoAbstract;
@@ -24,8 +26,10 @@ class HealthCheckBo extends BoAbstract
 {
     protected const BUILT_IN_HEALTH_CHECKS = [
         'db'      => DbHealthCheck::class,
-        'storage' => StorageHealthCheck::class,
+        'http'    => HttpHealthCheck::class,
+        's3'      => S3HealthCheck::class,
         'sqs'     => SqsHealthCheck::class,
+        'storage' => StorageHealthCheck::class,
     ];
 
     /**
