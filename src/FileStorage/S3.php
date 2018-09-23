@@ -214,4 +214,18 @@ class S3
 
         return $this->s3Client->getObject($args);
     }
+
+    /**
+     * @param string      $key
+     *
+     * @return \Aws\Result
+     */
+    public function deleteObject($key) {
+        $args = [
+            'Bucket' => $this->bucketName,
+            'Key'    => $key,
+        ];
+
+        return $this->s3Client->deleteObject($args);
+    }
 }
