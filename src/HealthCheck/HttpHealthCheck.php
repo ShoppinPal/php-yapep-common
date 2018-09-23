@@ -8,8 +8,6 @@ use YapepBase\Application;
 use YapepBase\Communication\CurlHttpRequest;
 use YapepBase\Communication\CurlHttpRequestResult;
 use YapepBase\Config;
-use YapepBase\Exception\ConfigException;
-use YapepBase\Exception\CurlException;
 use YapepBase\Exception\ParameterException;
 
 class HttpHealthCheck implements IHealthCheck
@@ -25,7 +23,7 @@ class HttpHealthCheck implements IHealthCheck
         $this->checkBody($configOptions, $responseBody);
     }
 
-    protected function checkArrayContents(array $expected, array $array): bool
+    protected function checkArrayContains(array $expected, array $array): bool
     {
         foreach ($expected as $key => $value) {
             if (!isset($array[$key])) {
@@ -33,7 +31,7 @@ class HttpHealthCheck implements IHealthCheck
             }
 
             if (is_array($value)) {
-                if (!is_array($array[$key]) || !$this->checkArrayContents($value, $array[$key])) {
+                if (!is_array($array[$key]) || !$this->checkArrayContains($value, $array[$key])) {
                     return false;
                 }
             } elseif ($array[$key] != $value) {
@@ -112,7 +110,7 @@ class HttpHealthCheck implements IHealthCheck
                 );
             }
 
-            if (!$this->checkArrayContents($configOptions['expectedJson'], $resultJson)) {
+            if (!$this->checkArrayContains($configOptions['expectedJson'], $resultJson)) {
                 throw new HealthCheckException(
                     'The response does not contain the expected JSON content: ' . json_encode(
                         $configOptions['expectedJson'],
