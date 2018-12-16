@@ -31,6 +31,6 @@
         "swiftmailer/swiftmailer": "Allows using the swiftmailer library for e-mail sending"
     },
     "bin": [
-        "bin/"
+        "batch_health_check"
     ]
 }
