@@ -1,6 +1,7 @@
 <?php
 namespace ShoppinPal\YapepCommon\HealthCheck\Batch;
 
+use Carbon\Carbon;
 use YapepBase\Batch\BatchScript;
 use YapepBase\Exception\Batch\AbortException;
 use YapepBase\Exception\Exception;
@@ -62,19 +63,24 @@ class LastRunChecker extends BatchScript
     protected function execute()
     {
         if (!file_exists($this->path)) {
-            $this->fail();
+            $this->fail('No such file: ' . $this->path);
             return;
         }
 
-        $fileData  = $this->getFileContents();
-        $threshold = time() - $this->thresholdSeconds;
+        $fileData               = $this->getFileContents();
+        $threshold              = time() - $this->thresholdSeconds;
+        $fileFormattedDate      = Carbon::createFromTimestamp($fileData)->toIso8601String();
+        $thresholdFormattedDate = Carbon::createFromTimestamp($threshold)->toIso8601String();
 
         if ($threshold > $fileData) {
-            $this->fail();
+            $this->fail(
+                $this->path . ' contains timestamp of ' . $fileData . ' (' . $fileFormattedDate . '), threshold is '
+                    . $threshold . ' (' . $thresholdFormattedDate . ')'
+            );
             return;
         }
 
-        echo 'OK' . PHP_EOL;
+        echo Carbon::now()->toIso8601String() . ' - OK: ' . $fileData . ' (' . $fileFormattedDate . ')' . PHP_EOL;
     }
 
     protected function getFileContents(): int
@@ -92,10 +98,10 @@ class LastRunChecker extends BatchScript
         return (int)trim($fileData);
     }
 
-    protected function fail()
+    protected function fail($message)
     {
         $this->setExitCode(self::EXIT_CODE_RUNTIME_ERROR);
-        echo 'FAIL' . PHP_EOL;
+        echo Carbon::now()->toIso8601String() . ' - FAIL: ' . $message . PHP_EOL;
     }
 
     protected function abort()
