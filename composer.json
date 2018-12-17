@@ -29,5 +29,8 @@
         "aws/aws-sdk-php": "Allows using SQS for queueing",
         "monolog/monolog": "Allows using the LineFormatter",
         "swiftmailer/swiftmailer": "Allows using the swiftmailer library for e-mail sending"
-    }
+    },
+    "bin": [
+        "batch_health_check"
+    ]
 }
