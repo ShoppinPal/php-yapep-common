@@ -159,7 +159,9 @@ class PredisStorage extends StorageAbstract implements IIncrementable
             );
         }
 
-        return json_decode($result, true);
+        return empty($result)
+            ? $result
+            : json_decode($result, true);
     }
 
     /**
