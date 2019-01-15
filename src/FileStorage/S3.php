@@ -194,4 +194,38 @@ class S3
 
         return (string)$request->getUri();
     }
+
+    /**
+     * @param string      $key
+     * @param string|null $saveAsFile
+     *
+     * @return \Aws\Result
+     */
+    public function getObject($key, $saveAsFile = null)
+    {
+        $args = [
+            'Bucket' => $this->bucketName,
+            'Key'    => $key,
+        ];
+
+        if ($saveAsFile) {
+            $args['SaveAs'] = $saveAsFile;
+        }
+
+        return $this->s3Client->getObject($args);
+    }
+
+    /**
+     * @param string      $key
+     *
+     * @return \Aws\Result
+     */
+    public function deleteObject($key) {
+        $args = [
+            'Bucket' => $this->bucketName,
+            'Key'    => $key,
+        ];
+
+        return $this->s3Client->deleteObject($args);
+    }
 }
