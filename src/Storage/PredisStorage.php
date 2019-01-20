@@ -116,6 +116,8 @@ class PredisStorage extends StorageAbstract implements IIncrementable
 
         $startTime = microtime(true);
 
+        $ttl = empty($ttl) ? null : $ttl;
+
         if (!$this->predisClient->set($this->makeKey($key), json_encode($data), 'ex', $ttl)) {
             throw new StorageException('Unable to store value in predis');
         }
