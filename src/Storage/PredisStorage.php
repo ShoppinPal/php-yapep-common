@@ -112,13 +112,24 @@ class PredisStorage extends StorageAbstract implements IIncrementable
         if ($this->readOnly) {
             throw new StorageException('Trying to write to a read only storage');
         }
+
         $debugger = Application::getInstance()->getDiContainer()->getDebugger();
 
         $startTime = microtime(true);
 
-        $ttl = empty($ttl) ? null : $ttl;
-
-        if (!$this->predisClient->set($this->makeKey($key), json_encode($data), 'ex', $ttl)) {
+        $fullKey = $this->makeKey($key);
+        $encodedData = json_encode($data);
+        if (
+            (
+                empty($ttl)
+                && !$this->predisClient->set($fullKey, $encodedData)
+            )
+            ||
+            (
+                !empty($ttl)
+                && !$this->predisClient->setex($fullKey, $ttl, $encodedData)
+            )
+        ) {
             throw new StorageException('Unable to store value in predis');
         }
 
