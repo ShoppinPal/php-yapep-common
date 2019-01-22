@@ -4,13 +4,21 @@ namespace ShoppinPal\YapepCommon\Storage;
 
 class StorageFactory extends \YapepBase\Storage\StorageFactory
 {
+    const TYPE_SASL_MEMCACHED = 'saslMemcached';
+    const TYPE_PREDIS         = 'predis';
 
     protected static function getStorage($configName, $storageType)
     {
-        if ($storageType == 'saslMemcached') {
-            return new SaslMemcachedStorage($configName);
+        switch ($storageType) {
+            case self::TYPE_SASL_MEMCACHED:
+                return new SaslMemcachedStorage($configName);
+
+            case self::TYPE_PREDIS:
+                return new PredisStorage($configName);
+
+            default:
+                return parent::getStorage($configName, $storageType);
         }
-        return parent::getStorage($configName, $storageType);
     }
 
 }
