@@ -113,12 +113,23 @@ class PredisStorage extends StorageAbstract implements IIncrementable
             throw new StorageException('Trying to write to a read only storage');
         }
 
-        $debugger = Application::getInstance()->getDiContainer()->getDebugger();
-
         $startTime = microtime(true);
+        $fullKey   = $this->makeKey($key);
 
-        $fullKey = $this->makeKey($key);
-        $encodedData = json_encode($data);
+        if (is_object($data)) {
+            $encodedData = serialize($data);
+        }
+        else {
+            $encodedData = json_encode($data);
+        }
+
+        $this->setByTtl($fullKey, $encodedData, $ttl);
+
+        $this->addToDebugger($startTime, StorageItem::METHOD_SET . ' ' . $key . ' for ' . $ttl, $data);
+    }
+
+    protected function setByTtl(string $fullKey, string $encodedData, ?int $ttl)
+    {
         if (
             (
                 empty($ttl)
@@ -132,20 +143,6 @@ class PredisStorage extends StorageAbstract implements IIncrementable
         ) {
             throw new StorageException('Unable to store value in predis');
         }
-
-        if (!$this->debuggerDisabled && $debugger !== false) {
-            $executionTime = microtime(true) - $startTime;
-
-            $debugger->addItem(
-                new StorageItem(
-                    'redis',
-                    'redis.' . $this->currentConfigurationName,
-                    StorageItem::METHOD_SET . ' ' . $key . ' for ' . $ttl,
-                    $data,
-                    $executionTime
-                )
-            );
-        }
     }
 
     /**
@@ -153,28 +150,23 @@ class PredisStorage extends StorageAbstract implements IIncrementable
      */
     public function get($key)
     {
-        $debugger = Application::getInstance()->getDiContainer()->getDebugger();
-
         $startTime = microtime(true);
+        $result    = $this->predisClient->get($this->makeKey($key));
 
-        $result = $this->predisClient->get($this->makeKey($key));
+        $this->addToDebugger($startTime, StorageItem::METHOD_GET . ' ' . $key, $result);
 
-        if (!$this->debuggerDisabled && $debugger !== false) {
-            $executionTime = microtime(true) - $startTime;
-
-            $debugger->addItem(
-                new StorageItem(
-                    'redis',
-                    'redis.' . $this->currentConfigurationName,
-                    StorageItem::METHOD_GET . ' ' . $key,
-                    $result, $executionTime
-                )
-            );
+        if (empty($result)) {
+            return false;
         }
 
-        return empty($result)
-            ? false
-            : json_decode($result, true);
+        $jsonDecoded = json_decode($result, true);
+
+        if (json_last_error() == JSON_ERROR_NONE) {
+            return $jsonDecoded;
+        }
+        else {
+            return unserialize($result);
+        }
     }
 
     /**
@@ -185,24 +177,12 @@ class PredisStorage extends StorageAbstract implements IIncrementable
         if ($this->readOnly) {
             throw new StorageException('Trying to write to a read only storage');
         }
-        $debugger = Application::getInstance()->getDiContainer()->getDebugger();
 
         $startTime = microtime(true);
 
         $this->predisClient->del([$this->makeKey($key)]);
 
-        // If we have a debugger, we have to log the request
-        if (!$this->debuggerDisabled && $debugger !== false) {
-            $debugger->addItem(
-                new StorageItem(
-                    'redis',
-                    'redis.' . $this->currentConfigurationName,
-                    StorageItem::METHOD_DELETE . ' ' . $key,
-                    null,
-                    microtime(true) - $startTime
-                )
-            );
-        }
+        $this->addToDebugger($startTime, StorageItem::METHOD_DELETE . ' ' . $key);
     }
 
     /**
@@ -213,24 +193,12 @@ class PredisStorage extends StorageAbstract implements IIncrementable
         if ($this->readOnly) {
             throw new StorageException('Trying to write to a read only storage');
         }
-        $debugger = Application::getInstance()->getDiContainer()->getDebugger();
 
         $startTime = microtime(true);
 
         $this->predisClient->flushall();
 
-        // If we have a debugger, we have to log the request
-        if (!$this->debuggerDisabled && $debugger !== false) {
-            $debugger->addItem(
-                new StorageItem(
-                    'redis',
-                    'redis.' . $this->currentConfigurationName,
-                    StorageItem::METHOD_CLEAR,
-                    null,
-                    microtime(true) - $startTime
-                )
-            );
-        }
+        $this->addToDebugger($startTime, StorageItem::METHOD_CLEAR);
     }
 
     /**
@@ -280,5 +248,24 @@ class PredisStorage extends StorageAbstract implements IIncrementable
             'readOnly'         => $this->readOnly,
             'debuggerDisabled' => $this->debuggerDisabled,
         );
+    }
+
+    protected function addToDebugger(float $startTime, string $query, $params = null)
+    {
+        $debugger = Application::getInstance()->getDiContainer()->getDebugger();
+
+        if (!$this->debuggerDisabled && $debugger !== false) {
+            $executionTime = microtime(true) - $startTime;
+
+            $debugger->addItem(
+                new StorageItem(
+                    'redis',
+                    'redis.' . $this->currentConfigurationName,
+                    $query,
+                    $params,
+                    $executionTime
+                )
+            );
+        }
     }
 }
