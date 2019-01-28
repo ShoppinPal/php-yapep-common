@@ -16,6 +16,12 @@ class HttpHealthCheck implements IHealthCheck
     {
         $url          = $this->getUrl($configOptions);
         $result       = $this->sendRequest($configOptions, $url);
+        $error = $result->getError();
+
+        if (!empty($error)) {
+            throw new HealthCheckException('Curl request failed with error: ' . $error);
+        }
+
         $responseBody = $result->getResponseBody();
 
         $this->checkStatus($configOptions, $result, $url);
