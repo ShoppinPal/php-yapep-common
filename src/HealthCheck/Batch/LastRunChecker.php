@@ -1,7 +1,7 @@
 <?php
 namespace ShoppinPal\YapepCommon\HealthCheck\Batch;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use YapepBase\Batch\BatchScript;
 use YapepBase\Exception\Batch\AbortException;
 use YapepBase\Exception\Exception;
@@ -69,8 +69,8 @@ class LastRunChecker extends BatchScript
 
         $fileData               = $this->getFileContents();
         $threshold              = time() - $this->thresholdSeconds;
-        $fileFormattedDate      = Carbon::createFromTimestamp($fileData)->toIso8601String();
-        $thresholdFormattedDate = Carbon::createFromTimestamp($threshold)->toIso8601String();
+        $fileFormattedDate      = CarbonImmutable::createFromTimestamp($fileData)->toIso8601String();
+        $thresholdFormattedDate = CarbonImmutable::createFromTimestamp($threshold)->toIso8601String();
 
         if ($threshold > $fileData) {
             $this->fail(
@@ -80,7 +80,7 @@ class LastRunChecker extends BatchScript
             return;
         }
 
-        echo Carbon::now()->toIso8601String() . ' - OK: ' . $fileData . ' (' . $fileFormattedDate . ')' . PHP_EOL;
+        echo CarbonImmutable::now()->toIso8601String() . ' - OK: ' . $fileData . ' (' . $fileFormattedDate . ')' . PHP_EOL;
     }
 
     protected function getFileContents(): int
@@ -101,7 +101,7 @@ class LastRunChecker extends BatchScript
     protected function fail($message)
     {
         $this->setExitCode(self::EXIT_CODE_RUNTIME_ERROR);
-        echo Carbon::now()->toIso8601String() . ' - FAIL: ' . $message . PHP_EOL;
+        echo CarbonImmutable::now()->toIso8601String() . ' - FAIL: ' . $message . PHP_EOL;
     }
 
     protected function abort()

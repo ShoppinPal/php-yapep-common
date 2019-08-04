@@ -29,16 +29,16 @@ class Bootstrap extends TestBootstrapAbstract
      *
      * @return void
      */
-    public function start()
+    public function start(): void
     {
         $this->testBootstrap(ROOT_DIR, ROOT_DIR . '/vendor/', CLASS_DIR);
     }
 
-    protected function loadConfig($rootDir)
+    protected function loadConfig($rootDir): void
     {
     }
 
-    protected function verifyEnvironment()
+    protected function verifyEnvironment(): void
     {
         define('ENVIRONMENT', ENVIRONMENT_DEV);
     }

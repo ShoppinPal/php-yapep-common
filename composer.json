@@ -4,9 +4,10 @@
     "minimum-stability": "stable",
     "license": "GPL-2.0",
     "require": {
+        "php": ">=7.2",
+        "ext-json": "*",
         "szeber/yapep_base": "0.3.x-dev",
-        "php": ">=7.1",
-        "nesbot/carbon": "^1.21",
+        "nesbot/carbon": "^2.22",
         "psr/log": "^1.0.0",
         "predis/predis": "^1.1"
     },
@@ -16,16 +17,18 @@
         }
     },
     "require-dev": {
+        "ext-memcached": "*",
         "aws/aws-sdk-php": "^3.18",
-        "phpunit/phpunit": "^6.0",
+        "phpunit/phpunit": "^8.3.3",
         "behat/behat": "^3.3",
-        "mockery/mockery": "^0.9.9",
+        "mockery/mockery": "^1.2.2",
         "swiftmailer/swiftmailer": "^6.0",
         "consolidation/robo": "^1.0.6",
         "josegonzalez/dotenv": "^3.0.0",
         "monolog/monolog": "^1.23.0"
     },
     "suggest": {
+        "ext-memcached:*": "Allows using memcached",
         "ext-json:*": "Allows using JSON",
         "aws/aws-sdk-php": "Allows using SQS for queueing",
         "monolog/monolog": "Allows using the LineFormatter",

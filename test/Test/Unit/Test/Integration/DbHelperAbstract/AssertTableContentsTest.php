@@ -11,7 +11,7 @@ use ShoppinPal\YapepCommon\Test\Integration\TableNodeHelper;
 class AssertTableContentsTest extends DbHelperAbstractTestAbstract
 {
 
-    public function testWhenRequirementsMet_nothingShouldHappen()
+    public function testWhenRequirementsMet_nothingShouldHappen(): void
     {
         $query = '
             SELECT
@@ -38,7 +38,7 @@ class AssertTableContentsTest extends DbHelperAbstractTestAbstract
         $this->object->assertTableContents('table_name', $expectedResult, ['field1' => DbHelperAbstract::ORDER_DIRECTION_ASCENDING]);
     }
 
-    public function testWhenRequirementsNotMet_shouldThrowException()
+    public function testWhenRequirementsNotMet_shouldThrowException(): void
     {
         $query = '
             SELECT
@@ -77,7 +77,7 @@ class AssertTableContentsTest extends DbHelperAbstractTestAbstract
     }
 
 
-    protected function expectFetchAll(string $query, array $fetchResult)
+    protected function expectFetchAll(string $query, array $fetchResult): void
     {
         $dbResultMock = Mockery::mock('\YapepBase\Database\DbResult')
             ->shouldReceive('fetchAll')

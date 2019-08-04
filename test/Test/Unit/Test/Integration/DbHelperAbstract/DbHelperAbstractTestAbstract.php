@@ -28,7 +28,7 @@ abstract class DbHelperAbstractTestAbstract extends TestAbstract
      *
      * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->object = Mockery::mock('ShoppinPal\YapepCommon\Test\Integration\DbHelperAbstract[getCurrentTimestamp,getDbConnection]');
@@ -36,7 +36,7 @@ abstract class DbHelperAbstractTestAbstract extends TestAbstract
     }
 
 
-    protected function expectGetCurrentTimestamp(int $expectedResult)
+    protected function expectGetCurrentTimestamp(int $expectedResult): void
     {
         $this->object
             ->shouldDeferMissing()
@@ -46,7 +46,7 @@ abstract class DbHelperAbstractTestAbstract extends TestAbstract
             ->andReturn($expectedResult);
     }
 
-    protected function expectGetDbConnection(DbConnection $expectedResult)
+    protected function expectGetDbConnection(DbConnection $expectedResult): void
     {
         $this->object
             ->shouldReceive('getDbConnection')

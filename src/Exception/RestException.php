@@ -41,7 +41,7 @@ class RestException extends Exception
         array $params = [],
         int $code = 0,
         ?\Exception $previous = null,
-        ?mixed $data = null
+        $data = null
     )
     {
         $this->errorCode = $errorCode;
