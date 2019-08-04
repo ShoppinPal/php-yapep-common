@@ -29,7 +29,6 @@
     },
     "suggest": {
         "ext-memcached:*": "Allows using memcached",
-        "ext-json:*": "Allows using JSON",
         "aws/aws-sdk-php": "Allows using SQS for queueing",
         "monolog/monolog": "Allows using the LineFormatter",
         "swiftmailer/swiftmailer": "Allows using the swiftmailer library for e-mail sending"
