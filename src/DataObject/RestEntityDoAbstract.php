@@ -67,7 +67,7 @@ abstract class RestEntityDoAbstract
             return $value->getSerializableContents();
         } elseif ($value instanceof CarbonInterface) {
             return $value->toIso8601String();
-        } elseif ($value instanceof \DateTime) {
+        } elseif ($value instanceof \DateTimeInterface) {
             return $value->format(DATE_ATOM);
         } elseif (is_object($value)) {
             if (method_exists($value, '__toString')) {
