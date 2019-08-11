@@ -8,7 +8,7 @@ namespace Test\Unit\Test\Integration\DbHelperAbstract;
 class GetTimeStampGivenDaysBeforeTest extends DbHelperAbstractTestAbstract
 {
 
-    public function testWhenCalled_shouldCalculateProperTimeStamp()
+    public function testWhenCalled_shouldCalculateProperTimeStamp(): void
     {
         $this->expectGetCurrentTimestamp(1490286701);
 

@@ -8,7 +8,7 @@ namespace Test\Unit\Test\Integration\DbHelperAbstract;
 class GetFromArrayTest extends DbHelperAbstractTestAbstract
 {
 
-    public function testWhenKeyDoesNotExist_shouldReturnDefaultValue()
+    public function testWhenKeyDoesNotExist_shouldReturnDefaultValue(): void
     {
         $input = [
             'key' => 'value'
@@ -22,7 +22,7 @@ class GetFromArrayTest extends DbHelperAbstractTestAbstract
     }
 
 
-    public function testWhenKeyExists_shouldReturnFormattedValue()
+    public function testWhenKeyExists_shouldReturnFormattedValue(): void
     {
         $input = [
             'key' => '12.12'

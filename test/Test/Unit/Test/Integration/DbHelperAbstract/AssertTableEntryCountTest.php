@@ -9,7 +9,7 @@ use Mockery;
 class AssertTableEntryCountTest extends DbHelperAbstractTestAbstract
 {
 
-    public function testWhenRequirementsMet_nothingShouldHappen()
+    public function testWhenRequirementsMet_nothingShouldHappen(): void
     {
         $query = '
             SELECT
@@ -22,7 +22,7 @@ class AssertTableEntryCountTest extends DbHelperAbstractTestAbstract
         $this->object->assertTableEntryCount('table_name', 2);
     }
 
-    public function testWhenRequirementsNotMet_shouldThrowException()
+    public function testWhenRequirementsNotMet_shouldThrowException(): void
     {
         $query = '
             SELECT
@@ -37,7 +37,7 @@ class AssertTableEntryCountTest extends DbHelperAbstractTestAbstract
     }
 
 
-    protected function expectFetchColumn(string $query, $expectedResult)
+    protected function expectFetchColumn(string $query, $expectedResult): void
     {
         $dbResultMock = Mockery::mock('\YapepBase\Database\DbResult')
             ->shouldReceive('fetchColumn')

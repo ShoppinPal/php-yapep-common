@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace ShoppinPal\YapepCommon\DataObject;
 
-use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use YapepBase\Exception\Exception;
 
 abstract class RestEntityDoAbstract
@@ -65,7 +65,7 @@ abstract class RestEntityDoAbstract
     {
         if ($value instanceof RestEntityDoAbstract) {
             return $value->getSerializableContents();
-        } elseif ($value instanceof Carbon) {
+        } elseif ($value instanceof CarbonInterface) {
             return $value->toIso8601String();
         } elseif ($value instanceof \DateTime) {
             return $value->format(DATE_ATOM);

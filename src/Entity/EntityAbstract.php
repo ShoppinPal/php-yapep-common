@@ -5,8 +5,10 @@ namespace ShoppinPal\YapepCommon\Entity;
 
 use ArrayAccess;
 use ArrayIterator;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
 use IteratorAggregate;
+use YapepBase\DataObject\NotSetValue;
 use YapepBase\Exception\ParameterException;
 
 abstract class EntityAbstract implements IteratorAggregate, ArrayAccess
@@ -78,37 +80,37 @@ abstract class EntityAbstract implements IteratorAggregate, ArrayAccess
         return $newEntity;
     }
 
-    protected function getCarbonFromDateTimeString(string $dateString): Carbon
+    protected function getCarbonFromDateTimeString(string $dateString): CarbonImmutable
     {
-        return Carbon::createFromFormat('Y-m-d H:i:s', $dateString, new \DateTimeZone('UTC'));
+        return CarbonImmutable::createFromFormat('Y-m-d H:i:s', $dateString, new \DateTimeZone('UTC'));
     }
 
-    protected function getCarbonFromNullableDateTimeString(?string $dateString): ?Carbon
+    protected function getCarbonFromNullableDateTimeString(?string $dateString): ?CarbonImmutable
     {
         return $dateString ? $this->getCarbonFromDateTimeString($dateString) : null;
     }
 
-    protected function getCarbonFromDateString(string $dateString): Carbon
+    protected function getCarbonFromDateString(string $dateString): CarbonImmutable
     {
-        return Carbon::createFromFormat('Y-m-d', $dateString, new \DateTimeZone('UTC'));
+        return CarbonImmutable::createFromFormat('Y-m-d', $dateString, new \DateTimeZone('UTC'));
     }
 
-    protected function getCarbonFromNullableDateString(?string $dateString): ?Carbon
+    protected function getCarbonFromNullableDateString(?string $dateString): ?CarbonImmutable
     {
         return $dateString ? $this->getCarbonFromDateString($dateString) : null;
     }
 
-    protected function getDateTimeStringFromCarbon(Carbon $carbon): string
+    protected function getDateTimeStringFromCarbon(CarbonInterface $carbon): string
     {
         return $carbon->setTimezone(new \DateTimeZone('UTC'))->toDateTimeString();
     }
 
-    protected function getDateTimeStringFromNullableCarbon(?Carbon $carbon): ?string
+    protected function getDateTimeStringFromNullableCarbon(?CarbonInterface $carbon): ?string
     {
         return null === $carbon ? null : $this->getDateTimeStringFromCarbon($carbon);
     }
 
-    protected function getDateStringFromCarbon(Carbon $carbon): string
+    protected function getDateStringFromCarbon(CarbonInterface $carbon): string
     {
         return $carbon->setTimezone(new \DateTimeZone('UTC'))->toDateString();
     }

@@ -8,7 +8,7 @@ namespace Test\Unit\Test\Integration\DbHelperAbstract;
 class FormatArrayTest extends DbHelperAbstractTestAbstract
 {
 
-    public function testWhenCalled_shouldFormatTheWholeArray()
+    public function testWhenCalled_shouldFormatTheWholeArray(): void
     {
         $input = [
             [

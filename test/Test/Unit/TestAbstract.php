@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 class TestAbstract extends TestCase
 {
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         Mockery::close();
         parent::tearDown();

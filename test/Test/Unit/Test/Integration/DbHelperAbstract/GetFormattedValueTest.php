@@ -8,14 +8,14 @@ namespace Test\Unit\Test\Integration\DbHelperAbstract;
 class GetFormattedValueTest extends DbHelperAbstractTestAbstract
 {
 
-    public function testWhenNullStringGiven_shouldReturnNull()
+    public function testWhenNullStringGiven_shouldReturnNull(): void
     {
         $result = $this->object->getFormattedValue('<null>');
         $this->assertNull($result);
     }
 
 
-    public function numericDataProvider()
+    public function numericDataProvider(): array
     {
         return [
             'integer as string' => ['12', 12],
@@ -30,14 +30,14 @@ class GetFormattedValueTest extends DbHelperAbstractTestAbstract
      * @param $value
      * @param $expectedResult
      */
-    public function testWhenNumericValueGiven_shouldCastToProperType($value, $expectedResult)
+    public function testWhenNumericValueGiven_shouldCastToProperType($value, $expectedResult): void
     {
         $result = $this->object->getFormattedValue($value);
         $this->assertSame($expectedResult, $result);
     }
 
 
-    public function testWhenDateNowStringGiven_shouldReturnProperDate()
+    public function testWhenDateNowStringGiven_shouldReturnProperDate(): void
     {
         $this->expectGetCurrentTimestamp(1490286701);
         $expectedResult = '2017-03-23';
@@ -47,7 +47,7 @@ class GetFormattedValueTest extends DbHelperAbstractTestAbstract
         $this->assertEquals($expectedResult, $result);
     }
 
-    public function testWhenDateStringGiven_shouldReturnProperDate()
+    public function testWhenDateStringGiven_shouldReturnProperDate(): void
     {
         $this->expectGetCurrentTimestamp(1490286701);
         $expectedResult = '2017-03-25';
@@ -57,7 +57,7 @@ class GetFormattedValueTest extends DbHelperAbstractTestAbstract
         $this->assertEquals($expectedResult, $result);
     }
 
-    public function testWhenDateTimeNowStringGiven_shouldReturnProperDate()
+    public function testWhenDateTimeNowStringGiven_shouldReturnProperDate(): void
     {
         $this->expectGetCurrentTimestamp(1490286701);
         $expectedResult = '2017-03-23 16:31:41';
@@ -67,7 +67,7 @@ class GetFormattedValueTest extends DbHelperAbstractTestAbstract
         $this->assertEquals($expectedResult, $result);
     }
 
-    public function testWhenDateTimeStringGiven_shouldReturnProperDate()
+    public function testWhenDateTimeStringGiven_shouldReturnProperDate(): void
     {
         $this->expectGetCurrentTimestamp(1490286701);
         $expectedResult = '2017-03-25 16:31:41';
@@ -77,7 +77,7 @@ class GetFormattedValueTest extends DbHelperAbstractTestAbstract
         $this->assertEquals($expectedResult, $result);
     }
 
-    public function otherValueProvider()
+    public function otherValueProvider(): array
     {
         return [
             'simple string' => ['just a string'],
@@ -92,7 +92,7 @@ class GetFormattedValueTest extends DbHelperAbstractTestAbstract
      *
      * @param $inputAndExpectedValue
      */
-    public function testWhenOtherValueGiven_shouldReturnItUnchanged($inputAndExpectedValue)
+    public function testWhenOtherValueGiven_shouldReturnItUnchanged($inputAndExpectedValue): void
     {
         $result = $this->object->getFormattedValue($inputAndExpectedValue);
 
