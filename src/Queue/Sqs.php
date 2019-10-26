@@ -210,6 +210,21 @@ class Sqs
         ]);
     }
 
+    public function getQueueAttributes(string $queueConfigName): SqsQueueAttributeDo
+    {
+        $queueName  = $this->sqsQueueConfigHandler->getNameForQueue($queueConfigName);
+        $queueUrl   = $this->getQueueUrlAndCreateIfNotExists($queueName, $queueConfigName);
+
+        $response = $this->sqsClient->getQueueAttributes([
+            'QueueUrl'       => $queueUrl,
+            'AttributeNames' => [
+                'All',
+            ]
+        ]);
+
+        return new SqsQueueAttributeDo($response->get('Attributes'));
+    }
+
     /**
      * Returns the queue URL for the specified queue, and it will create it if it doesn't exist.
      *
