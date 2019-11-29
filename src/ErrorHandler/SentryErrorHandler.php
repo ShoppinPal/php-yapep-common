@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Shoppinpal\YapepCommon\ErrorHandler;
+namespace ShoppinPal\YapepCommon\ErrorHandler;
 
 use Sentry\State\HubInterface;
 use YapepBase\ErrorHandler\IErrorHandler;
