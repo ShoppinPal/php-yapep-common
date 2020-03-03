@@ -9,8 +9,8 @@ trait TLastRunTimeCheck
     {
         $fileHandler = Application::getInstance()->getDiContainer()->getFileHandler();
 
-        if (!$fileHandler->checkIsPathExists(basename($path))) {
-            $fileHandler->makeDirectory(basename($path), 0755, true);
+        if (!$fileHandler->checkIsPathExists(dirname($path))) {
+            $fileHandler->makeDirectory(dirname($path), 0755, true);
         }
 
         $fileHandler->write($path, time(), false, true);
