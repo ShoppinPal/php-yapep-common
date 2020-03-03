@@ -54,11 +54,16 @@ class Sqs
         $region       = $config->get('commonResource.sqs.' . $configName . '.region', '');
         $clientConfig = [
             'version'     => $config->get('commonResource.sqs.' . $configName . '.version', 'latest'),
-            'credentials' => [
-                'key'    => $config->get('commonResource.sqs.' . $configName . '.accessKeyId'),
-                'secret' => $config->get('commonResource.sqs.' . $configName . '.accessSecret'),
-            ],
         ];
+
+        $key    = $config->get('commonResource.sqs.' . $configName . '.accessKeyId', '');
+        $secret = $config->get('commonResource.sqs.' . $configName . '.accessSecret', '');
+        if (!empty($key) || !empty($secret)) {
+            $clientConfig['credentials'] = [
+                'key'    => $key,
+                'secret' => $secret,
+            ];
+        }
 
         $endpoint = $config->get('commonResource.sqs.' . $configName . '.endpoint', '');
         if ($endpoint) {
