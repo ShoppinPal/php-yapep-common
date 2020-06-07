@@ -41,6 +41,10 @@ class ErrorLogHandler
         }
         $errors = [];
         foreach (explode(PHP_EOL, $errorString) as $error) {
+            if (empty($error)) {
+                continue;
+            }
+
             $errorMessage = json_decode($error, true)['message'];
             if (empty($errorMessage)) {
                 continue;
