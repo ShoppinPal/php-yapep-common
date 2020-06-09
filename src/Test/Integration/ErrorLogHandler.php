@@ -18,8 +18,11 @@ class ErrorLogHandler
     public function ignoreError(int $errorCode, string $messagePrefix)
     {
         $errorHandlerHelper = new ErrorHandlerHelper();
-        $message = '[' . $errorHandlerHelper->getPhpErrorLevelDescription($errorCode) . '(' . $errorCode . ')]: '
-            . $messagePrefix;
+        $errorType = $errorCode === ErrorHandlerHelper::E_EXCEPTION
+            ? $errorHandlerHelper->getPhpErrorLevelDescription($errorCode)
+            : $errorHandlerHelper->getPhpErrorLevelDescription($errorCode) . '(' . $errorCode . ')';
+
+        $message = '[' . $errorType . ']: ' . $messagePrefix;
 
         $this->ignoredErrors[] = $message;
     }
@@ -46,6 +49,7 @@ class ErrorLogHandler
             }
 
             $errorMessage = json_decode($error, true)['message'];
+
             if (empty($errorMessage)) {
                 continue;
             }
