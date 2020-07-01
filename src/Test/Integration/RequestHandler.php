@@ -31,8 +31,13 @@ class RequestHandler
      */
     protected $calledUrl;
 
-    public function callUrl(string $url, string $method = CurlHttpRequest::METHOD_GET, array $params = [], $storeResponse = true): CurlHttpRequestResult
-    {
+    public function callUrl(
+        string $url,
+        string $method = CurlHttpRequest::METHOD_GET,
+        array $params = [],
+        $storeResponse = true,
+        array $headers = []
+    ): CurlHttpRequestResult {
         $params[BootstrapAbstract::GET_PARAM_NAME_TESTING_MODE] = 1;
         $this->sentParams = $params;
         $this->calledUrl = $url;
@@ -41,6 +46,9 @@ class RequestHandler
         $request->setUrl($url);
         $request->setMethod($method);
         $request->setPayload($params, CurlHttpRequest::PAYLOAD_TYPE_QUERY_STRING_ARRAY);
+        foreach ($headers as $header) {
+            $request->addHeader($header);
+        }
 
         $result = $request->send();
         if ($storeResponse) {
