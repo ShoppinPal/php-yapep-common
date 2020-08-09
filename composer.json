@@ -26,7 +26,8 @@
         "consolidation/robo": "^1.4.10",
         "josegonzalez/dotenv": "^3.2.0",
         "monolog/monolog": "^1.24.0",
-        "sentry/sdk": "^2.0.3"
+        "sentry/sdk": "^2.0.3",
+        "zircote/swagger-php": "^2.0.10"
     },
     "suggest": {
         "ext-memcached:*": "Allows using memcached",
