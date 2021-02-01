@@ -1,12 +1,41 @@
 <?php
+
 namespace ShoppinPal\YapepCommon\Robo;
 
 use Exception;
+use InvalidArgumentException;
 use josegonzalez\Dotenv\Loader;
 use Robo\Tasks;
+use ShoppinPal\YapepCommon\Robo\Swagger\DocumentationGenerator;
+use ShoppinPal\YapepCommon\Robo\Swagger\OpenApiGenerator;
+use ShoppinPal\YapepCommon\Robo\Swagger\SwaggerGenerator;
 
 abstract class RoboFileAbstract extends Tasks
 {
+    protected const SWAGGER_VERSION_V2 = 'v2';
+    protected const SWAGGER_VERSION_V3 = 'v3';
+
+    /**
+     * @return ApplicationConfig[]
+     */
+    abstract protected function getSwaggerConfigs(): array;
+
+    abstract protected function getSwaggerVersion(): string;
+
+    /**
+     * Returns the full path to the .env file
+     *
+     * @return string
+     */
+    abstract protected function getEnvFilePath();
+
+    /**
+     * Returns the full path to the .env.example file
+     *
+     * @return string
+     */
+    abstract protected function getEnvExamplePath();
+
     /**
      * Prepares the execution environment (private_envconfig.php and private_environment.conf)
      *
@@ -101,149 +130,35 @@ abstract class RoboFileAbstract extends Tasks
      */
     public function generateApiDoc()
     {
-        foreach ($this->getApplicationBasePaths() as $applicationName => $basePaths) {
-            $basePaths = (array)$basePaths;
-            $basePath  = reset($basePaths);
-            $jsonPath  = $basePath . '/www/swagger.json';
-            $task      = $this->taskExec('vendor/bin/swagger');
+        switch ($this->getSwaggerVersion()) {
+            case self::SWAGGER_VERSION_V2:
+                $generator     = new SwaggerGenerator();
+                $generatorPath = 'vendor/bin/swagger';
+                break;
 
-            foreach ($basePaths as $path) {
-                $task->arg($path);
-            }
-
-            $task->option('--output')
-                ->arg($jsonPath)
-                ->run();
-
-            $this->say('Adding default errors to the api doc');
-
-            $jsonContent = json_decode(file_get_contents($jsonPath), true);
-
-            $jsonContent = $this->addErrorsToSwaggerJsonContent($applicationName, $jsonContent);
-
-            file_put_contents($jsonPath, json_encode($jsonContent, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
-        }
-    }
-
-    /**
-     * Adds default errors to the Swagger JSON content
-     *
-     * @param string $applicationName
-     * @param array  $jsonContent
-     *
-     * @return array
-     */
-    protected function addErrorsToSwaggerJsonContent($applicationName, array $jsonContent)
-    {
-        $usedErrorCodes = [];
-
-        foreach ($jsonContent['paths'] ?? [] as $path => $methods) {
-            foreach ($methods as $method => $methodContent) {
-                $errorCodes = array_merge(
-                    $this->getImpliedApiErrorCodes($applicationName, $method),
-                    $methodContent['x-errors'] ?? []
-                );
-
-                foreach ($errorCodes as $errorCode) {
-                    $usedErrorCodes[$errorCode] = 1;
-
-                    // This status code is already documented, don't override
-                    if (isset($methodContent['responses'][(string)$errorCode])) {
-                        continue;
-                    }
-
-                    $methodContent['responses'][(string)$errorCode] = [
-                        'description' => $this->getApiErrorDocDescriptionByErrorCode($errorCode),
-                        'schema' => [
-                            '$ref' => '#/definitions/Error' . $errorCode,
-                        ]
-                    ];
-                }
-                if (isset($methodContent['x-errors'])) {
-                    unset($methodContent['x-errors']);
-                }
-
-                $jsonContent['paths'][$path][$method] = $methodContent;
-            }
-        }
-
-        foreach ($usedErrorCodes as $errorCode => $value) {
-            if (!isset($jsonContent['definitions']['Error' . $errorCode])) {
-                $jsonContent['definitions']['Error' . $errorCode] = $this->getApiDocErrorResponseDefinitionForCode(
-                    $errorCode
-                );
-            }
-        }
-
-        return $jsonContent;
-    }
-
-    /**
-     * Returns the api error description based on the status code.
-     *
-     * @param int $errorCode
-     *
-     * @return string
-     */
-    protected function getApiErrorDocDescriptionByErrorCode($errorCode)
-    {
-        switch ((int)$errorCode) {
-            case 400:
-                return 'Bad request, the request parameters are invalid';
-                
-            case 401:
-                return 'Authorization required for calling this endpoint';
-                
-            case 402:
-                return 'Billing error, payment required';
-                
-            case 403:
-                return 'The authenticated user has no permission for this operation';
-                
-            case 404:
-                return 'Entity not found';
+            case self::SWAGGER_VERSION_V3:
+                $generator     = new OpenApiGenerator();
+                $generatorPath = 'vendor/bin/openapi';
+                break;
 
             default:
-                return 'Error';
-        }
-    }
-
-    /**
-     * Returns the error response Swagger definition for the specified error code.
-     *
-     * @param int $errorCode
-     *
-     * @return array
-     */
-    protected function getApiDocErrorResponseDefinitionForCode($errorCode)
-    {
-        $errorDefinition = [
-            'properties' => [
-                'errorCode'    => [
-                    'type'        => 'string',
-                    'description' => 'The code of the error'
-                ],
-                'errorMessage' => [
-                    'type'        => 'string',
-                    'description' => 'Description of the error',
-                ]
-            ]
-        ];
-
-        if (400 == $errorCode) {
-            $errorDefinition['properties']['params'] = [
-                'type'        => 'object',
-                'description' => 'List of the invalid params where the property is the parameter name and the value is the describing the issue'
-            ];
+                throw new InvalidArgumentException('Unknown version: ' . $this->getSwaggerVersion());
         }
 
-        return $errorDefinition;
+        $configs = $this->getSwaggerConfigs();
+        $tasks   = [];
+
+        for ($i = 0; $i < count($configs); $i++) {
+            $tasks[] = $this->taskExec($generatorPath);
+        }
+
+        (new DocumentationGenerator($generator))->generate($tasks, ...$configs);
     }
 
     /**
      * Updates the .env file from the .env.example file.
      *
-     * @param bool   $doUpdate
+     * @param bool $doUpdate
      *
      * @return void
      */
@@ -422,35 +337,4 @@ abstract class RoboFileAbstract extends Tasks
         ];
     }
 
-    /**
-     * Returns the base paths for all applications in the project as an associative array where the key is the name
-     * of the application, value is the base path.
-     *
-     * @return array
-     */
-    abstract protected function getApplicationBasePaths();
-
-    /**
-     * Returns the full path to the .env file
-     *
-     * @return string
-     */
-    abstract protected function getEnvFilePath();
-
-    /**
-     * Returns the full path to the .env.example file
-     *
-     * @return string
-     */
-    abstract protected function getEnvExamplePath();
-
-    /**
-     * Returns the errors that are possible for all endpoints of the api, and not needed to be specifically documented
-     *
-     * @param string $applicationName
-     * @param string $method
-     *
-     * @return array
-     */
-    abstract protected function getImpliedApiErrorCodes($applicationName, $method);
 }
