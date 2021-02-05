@@ -1,6 +1,6 @@
 <?php
 
-namespace ShoppinPal\YapepCommon\Robo\Swagger;
+namespace ShoppinPal\YapepCommon\Robo\OpenApi;
 
 class ErrorHelper
 {

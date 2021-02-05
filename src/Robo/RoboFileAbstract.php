@@ -6,21 +6,21 @@ use Exception;
 use InvalidArgumentException;
 use josegonzalez\Dotenv\Loader;
 use Robo\Tasks;
-use ShoppinPal\YapepCommon\Robo\Swagger\DocumentationGenerator;
-use ShoppinPal\YapepCommon\Robo\Swagger\OpenApiV3Generator;
-use ShoppinPal\YapepCommon\Robo\Swagger\SwaggerGenerator;
+use ShoppinPal\YapepCommon\Robo\OpenApi\DocumentationGenerator;
+use ShoppinPal\YapepCommon\Robo\OpenApi\OpenApiV3Generator;
+use ShoppinPal\YapepCommon\Robo\OpenApi\SwaggerGenerator;
 
 abstract class RoboFileAbstract extends Tasks
 {
-    protected const SWAGGER_VERSION_V2 = 'v2';
-    protected const SWAGGER_VERSION_V3 = 'v3';
+    protected const OPEN_API_VERSION_V2 = 'v2';
+    protected const OPEN_API_VERSION_V3 = 'v3';
 
     /**
      * @return ApplicationConfig[]
      */
-    abstract protected function getSwaggerConfigs(): array;
+    abstract protected function getOpenApiConfigs(): array;
 
-    abstract protected function getSwaggerVersion(): string;
+    abstract protected function getOpenApiVersion(): string;
 
     /**
      * Returns the full path to the .env file
@@ -130,22 +130,22 @@ abstract class RoboFileAbstract extends Tasks
      */
     public function generateApiDoc()
     {
-        switch ($this->getSwaggerVersion()) {
-            case self::SWAGGER_VERSION_V2:
+        switch ($this->getOpenApiVersion()) {
+            case self::OPEN_API_VERSION_V2:
                 $generator     = new SwaggerGenerator();
                 $generatorPath = 'vendor/bin/swagger';
                 break;
 
-            case self::SWAGGER_VERSION_V3:
+            case self::OPEN_API_VERSION_V3:
                 $generator     = new OpenApiV3Generator();
                 $generatorPath = 'vendor/bin/openapi';
                 break;
 
             default:
-                throw new InvalidArgumentException('Unknown version: ' . $this->getSwaggerVersion());
+                throw new InvalidArgumentException('Unknown version: ' . $this->getOpenApiVersion());
         }
 
-        $configs = $this->getSwaggerConfigs();
+        $configs = $this->getOpenApiConfigs();
         $tasks   = [];
 
         for ($i = 0; $i < count($configs); $i++) {

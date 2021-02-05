@@ -1,12 +1,12 @@
 <?php
 
-namespace ShoppinPal\YapepCommon\Robo\Swagger;
+namespace ShoppinPal\YapepCommon\Robo\OpenApi;
 
 use ShoppinPal\YapepCommon\Robo\ApplicationConfig;
 
 class SwaggerGenerator implements GeneratorInterface
 {
-    public function addErrorsToSwaggerJsonContent(array &$jsonContent, ApplicationConfig $config): void
+    public function addErrorsToOpenApiJsonContent(array &$jsonContent, ApplicationConfig $config): void
     {
         $usedErrorCodes = [];
 

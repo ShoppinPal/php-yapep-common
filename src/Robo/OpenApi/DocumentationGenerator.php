@@ -1,6 +1,6 @@
 <?php
 
-namespace ShoppinPal\YapepCommon\Robo\Swagger;
+namespace ShoppinPal\YapepCommon\Robo\OpenApi;
 
 use Robo\Collection\CollectionBuilder;
 use Robo\Task\Base\Exec;
@@ -17,14 +17,14 @@ class DocumentationGenerator
     }
 
     /**
-     * @param CollectionBuilder[]|Exec[] $swaggerTasks
-     * @param ApplicationConfig          ...$configs
+     * @param CollectionBuilder[]|Exec[] $roboTasks
+     * @param ApplicationConfig ...$configs
      */
-    public function generate(array $swaggerTasks, ApplicationConfig ...$configs): void
+    public function generate(array $roboTasks, ApplicationConfig ...$configs): void
     {
         foreach ($configs as $index => $config) {
-            $currentTask = $swaggerTasks[$index];
-            $swaggerPath = $config->getTargetJsonPath();
+            $currentTask    = $roboTasks[$index];
+            $targetJsonPath = $config->getTargetJsonPath();
 
             foreach ($config->getCodePaths() as $path) {
                 $currentTask->arg($path);
@@ -32,14 +32,14 @@ class DocumentationGenerator
             $currentTask->arg($config->getEntryPointPath());
 
             $currentTask->option('--output')
-                ->arg($swaggerPath)
+                ->arg($targetJsonPath)
                 ->run();
 
-            $jsonContent = json_decode(file_get_contents($swaggerPath), true);
+            $jsonContent = json_decode(file_get_contents($targetJsonPath), true);
 
-            $this->generator->addErrorsToSwaggerJsonContent($jsonContent, $config);
+            $this->generator->addErrorsToOpenApiJsonContent($jsonContent, $config);
 
-            file_put_contents($swaggerPath, json_encode($jsonContent, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            file_put_contents($targetJsonPath, json_encode($jsonContent, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
             $currentTask = null;
         }
     }
