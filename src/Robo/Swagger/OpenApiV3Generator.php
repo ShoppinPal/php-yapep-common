@@ -4,7 +4,7 @@ namespace ShoppinPal\YapepCommon\Robo\Swagger;
 
 use ShoppinPal\YapepCommon\Robo\ApplicationConfig;
 
-class OpenApiGenerator implements GeneratorInterface
+class OpenApiV3Generator implements GeneratorInterface
 {
     public function addErrorsToSwaggerJsonContent(array &$jsonContent, ApplicationConfig $config): void
     {

@@ -7,7 +7,7 @@ use InvalidArgumentException;
 use josegonzalez\Dotenv\Loader;
 use Robo\Tasks;
 use ShoppinPal\YapepCommon\Robo\Swagger\DocumentationGenerator;
-use ShoppinPal\YapepCommon\Robo\Swagger\OpenApiGenerator;
+use ShoppinPal\YapepCommon\Robo\Swagger\OpenApiV3Generator;
 use ShoppinPal\YapepCommon\Robo\Swagger\SwaggerGenerator;
 
 abstract class RoboFileAbstract extends Tasks
@@ -137,7 +137,7 @@ abstract class RoboFileAbstract extends Tasks
                 break;
 
             case self::SWAGGER_VERSION_V3:
-                $generator     = new OpenApiGenerator();
+                $generator     = new OpenApiV3Generator();
                 $generatorPath = 'vendor/bin/openapi';
                 break;
 
