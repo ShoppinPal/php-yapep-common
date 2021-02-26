@@ -3,11 +3,9 @@ declare(strict_types = 1);
 
 namespace ShoppinPal\YapepCommon\Test\Integration;
 
-
 use ShoppinPal\YapepCommon\Bootstrap\BootstrapAbstract;
 use YapepBase\Communication\CurlHttpRequest;
 use YapepBase\Communication\CurlHttpRequestResult;
-
 
 class RequestHandler
 {
@@ -82,7 +80,7 @@ class RequestHandler
             $request->addHeader($header);
         }
 
-        $request->setPayload(json_encode($params), CurlHttpRequest::PAYLOAD_TYPE_RAW);
+        $this->setPayloadToRequest($request, $method, $params);
 
         $result = $request->send();
         if ($storeResponse) {
@@ -108,7 +106,6 @@ class RequestHandler
         return $this->responseHeaders;
     }
 
-
     protected function formatDataForPost(array $post, array &$output, string $paramNamePrefix = null)
     {
         foreach ($post as $key => $value) {
@@ -120,6 +117,18 @@ class RequestHandler
             else {
                 $output[$currentKey] = $value;
             }
+        }
+    }
+
+    private function setPayloadToRequest(CurlHttpRequest $request, string $method, array $params): void
+    {
+        switch ($method) {
+            case CurlHttpRequest::METHOD_GET:
+                $request->setPayload($params, CurlHttpRequest::PAYLOAD_TYPE_QUERY_STRING_ARRAY);
+                break;
+
+            default:
+                $request->setPayload(json_encode($params), CurlHttpRequest::PAYLOAD_TYPE_RAW);
         }
     }
 }
