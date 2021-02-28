@@ -202,14 +202,6 @@ abstract class BootstrapAbstract
 
     protected function initDevelopmentEnvironment()
     {
-        if (
-            ENVIRONMENT == ENVIRONMENT_DEV
-            &&
-            php_sapi_name() == 'cli'
-        ) {
-            ini_set('xdebug.overload_var_dump', 0);
-            ini_set('xdebug.max_nesting_level', 5000);
-        }
     }
 
     /**
