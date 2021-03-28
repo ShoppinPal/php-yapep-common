@@ -15,6 +15,7 @@ class RestException extends Exception
     const CODE_METHOD_NOT_SUPPORTED = 'MethodNotSupported';
     const CODE_INTERNAL_ERROR = 'InternalError';
     const CODE_REQUEST_ERROR = 'RequestError';
+    const CODE_NOT_FOUND = 'NotFound';
 
     const MSG_PARAMETER_ERROR = 'An invalid parameter was sent to the endpoint, or a required parameter is missing';
     const MSG_UNAUTHENTICATED = 'This endpoint requires authentication but no "Authorization" header is sent, or the token is invalid';
@@ -23,6 +24,7 @@ class RestException extends Exception
     const MSG_METHOD_NOT_SUPPORTED = 'The requested endpoint exists, but does not support the specified method';
     const MSG_INTERNAL_ERROR = 'An internal error occured while serving the request. The error has been logged, please try your request again later';
     const MSG_REQUEST_ERROR = 'There is a problem with your request';
+    const MSG_NOT_FOUND = 'The requested entity is not found';
 
     const PARAM_ERROR_MISSING = 'missing';
     const PARAM_ERROR_DUPLICATE = 'duplicate';
@@ -52,7 +54,7 @@ class RestException extends Exception
         parent::__construct($message, $code, $previous, $data);
     }
 
-    private function getDefaultMessageForErrorCode(): ?string
+    protected function getDefaultMessageForErrorCode(): ?string
     {
         switch ($this->errorCode) {
             case self::CODE_PARAMETER_ERROR:
@@ -75,6 +77,9 @@ class RestException extends Exception
 
             case self::CODE_REQUEST_ERROR:
                 return self::MSG_REQUEST_ERROR;
+
+            case self::CODE_NOT_FOUND:
+                return self::MSG_NOT_FOUND;
         }
 
         return null;
@@ -95,6 +100,9 @@ class RestException extends Exception
 
             case self::CODE_UNAUTHORIZED:
                 return 403;
+
+            case self::CODE_NOT_FOUND:
+                return 404;
 
             case self::CODE_METHOD_NOT_SUPPORTED:
                 return 405;
