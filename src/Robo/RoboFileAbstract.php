@@ -337,17 +337,11 @@ abstract class RoboFileAbstract extends Tasks
         ];
     }
 
-    protected function initLogDirectory($projectName)
+    protected function initWritableDirectories($projectName)
     {
         $this->say('Initialising the log directory');
 
-        $dirs = [
-            '/var/log/' . $projectName,
-            '/var/log/' . $projectName . '/application_log',
-            '/var/log/' . $projectName . '/error',
-        ];
-
-        foreach ($dirs as $dir) {
+        foreach ($this->getWritableDirectories($projectName) as $dir) {
             if (!file_exists($dir)) {
                 mkdir($dir);
             }
@@ -360,5 +354,17 @@ abstract class RoboFileAbstract extends Tasks
         }
 
         $this->say('Log directory initialised');
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getWritableDirectories($projectName)
+    {
+        return [
+            '/var/log/' . $projectName,
+            '/var/log/' . $projectName . '/application_log',
+            '/var/log/' . $projectName . '/error',
+        ];
     }
 }
