@@ -337,4 +337,28 @@ abstract class RoboFileAbstract extends Tasks
         ];
     }
 
+    protected function initLogDirectory($projectName)
+    {
+        $this->say('Initialising the log directory');
+
+        $dirs = [
+            '/var/log/' . $projectName,
+            '/var/log/' . $projectName . '/application_log',
+            '/var/log/' . $projectName . '/error',
+        ];
+
+        foreach ($dirs as $dir) {
+            if (!file_exists($dir)) {
+                mkdir($dir);
+            }
+
+            if (!is_dir($dir)) {
+                throw new Exception($dir . ' is not a directory!');
+            }
+
+            chmod($dir, 0777);
+        }
+
+        $this->say('Log directory initialised');
+    }
 }
