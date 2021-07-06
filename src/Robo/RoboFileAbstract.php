@@ -176,6 +176,12 @@ abstract class RoboFileAbstract extends Tasks
             }
         }
 
+        foreach ($this->getPromptedEnvValues() as $key => $prompt) {
+            if (empty($env[$key])) {
+                $additions[$key] = $this->ask($prompt);
+            }
+        }
+
         if (!empty($additions)) {
             $content = file_get_contents($envPath);
 
@@ -366,5 +372,10 @@ abstract class RoboFileAbstract extends Tasks
             '/var/log/' . $projectName . '/application_log',
             '/var/log/' . $projectName . '/error',
         ];
+    }
+
+    protected function getPromptedEnvValues(): array
+    {
+        return [];
     }
 }
