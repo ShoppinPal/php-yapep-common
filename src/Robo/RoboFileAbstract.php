@@ -15,6 +15,8 @@ abstract class RoboFileAbstract extends Tasks
     protected const OPEN_API_VERSION_V2 = 'v2';
     protected const OPEN_API_VERSION_V3 = 'v3';
 
+    protected $allowInteraction = true;
+
     /**
      * @return ApplicationConfig[]
      */
@@ -58,13 +60,17 @@ abstract class RoboFileAbstract extends Tasks
 
         if (!empty($opts['environment']) && in_array($opts['environment'], $validEnvironments)) {
             $environment = $opts['environment'];
-        } else {
+        } elseif ($this->allowInteraction) {
             do {
                 $environment = $this->askDefault(
                     'Please select the environment (' . implode(', ', $validEnvironments) . ')',
                     'dev'
                 );
             } while (!in_array($environment, $validEnvironments));
+        } else {
+            throw new Exception(
+                'Interaction is not allowed and the environment is not defined via a command line switch'
+            );
         }
 
         $envFileContent = '';
@@ -177,7 +183,7 @@ abstract class RoboFileAbstract extends Tasks
         }
 
         foreach ($this->getPromptedEnvValues() as $key => $prompt) {
-            if (empty($env[$key])) {
+            if (empty($env[$key]) && $this->allowInteraction) {
                 $additions[$key] = $this->ask($prompt);
             }
         }
@@ -304,8 +310,10 @@ abstract class RoboFileAbstract extends Tasks
             $this->io()->block($helpText);
         }
 
-        $username = $this->ask('Please enter your username');
-        $password = $this->ask('Please enter your password', true);
+        if ($this->allowInteraction) {
+            $username = $this->ask('Please enter your username');
+            $password = $this->ask('Please enter your password', true);
+        }
 
         return [
             'username' => $username,
@@ -334,8 +342,10 @@ abstract class RoboFileAbstract extends Tasks
             $this->io()->block($helpText);
         }
 
-        $key    = $this->ask('Please enter your consumer key');
-        $secret = $this->ask('Please enter your consumer secret');
+        if ($this->allowInteraction) {
+            $key    = $this->ask('Please enter your consumer key');
+            $secret = $this->ask('Please enter your consumer secret');
+        }
 
         return [
             'consumer-key'    => $key,
