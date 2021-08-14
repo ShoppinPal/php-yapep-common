@@ -5,6 +5,7 @@ namespace ShoppinPal\YapepCommon\Controller;
 
 use ShoppinPal\YapepCommon\DataObject\RestResponseDo;
 use ShoppinPal\YapepCommon\Exception\RestException;
+use YapepBase\Application;
 use YapepBase\Config;
 use YapepBase\Controller\HttpController;
 use YapepBase\Exception\ControllerException;
@@ -44,10 +45,15 @@ abstract class RestApiController extends HttpController
      */
     public function run($action)
     {
+        /** @var PhpInput $input */
+        $input = Application::getInstance()->getDiContainer()[PhpInput::class];
+        if (null === $input) {
+            $input = new PhpInput();
+        }
         try {
             $this->response->setContentType(MimeType::JSON);
 
-            $this->requestBody = file_get_contents('php://input');
+            $this->requestBody = $input->getStdIn();
 
             if (!empty($this->requestBody)) {
                 $requestData = json_decode($this->requestBody, true);
