@@ -45,9 +45,11 @@ abstract class RestApiController extends HttpController
      */
     public function run($action)
     {
-        /** @var PhpInput $input */
-        $input = Application::getInstance()->getDiContainer()[PhpInput::class];
-        if (null === $input) {
+        $diContainer = Application::getInstance()->getDiContainer();
+        if (isset($diContainer[PhpInput::class])) {
+            /** @var PhpInput $input */
+            $input = $diContainer[PhpInput::class];
+        } else {
             $input = new PhpInput();
         }
         try {
