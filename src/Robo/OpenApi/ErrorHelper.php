@@ -39,7 +39,8 @@ class ErrorHelper
                     'type'        => 'string',
                     'description' => 'Description of the error',
                 ]
-            ]
+            ],
+            'type' => 'object'
         ];
 
         if (400 == $errorCode) {
