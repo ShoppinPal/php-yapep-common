@@ -9,15 +9,10 @@ use YapepBase\Exception\ParameterException;
  */
 class SqsFileMock extends Sqs
 {
-
-    const KEY_ID = 'id';
-
-    const KEY_BODY = 'body';
-
-    const KEY_VISIBLE_AFTER = 'visibleAfter';
-
-    const KEY_ATTRIBUTES = 'attributes';
-
+    const KEY_ID              = 'id';
+    const KEY_BODY            = 'body';
+    const KEY_VISIBLE_AFTER   = 'visibleAfter';
+    const KEY_ATTRIBUTES      = 'attributes';
     const KEY_RECEIPT_HANDLES = 'receiptHandles';
 
     const DEFAULT_VISIBILITY_TIMEOUT = 5;
@@ -105,10 +100,12 @@ class SqsFileMock extends Sqs
      */
     public function getNumberOfMessagesInQueue($queueName)
     {
-        return count(json_decode(
-            file_get_contents($this->directory . DIRECTORY_SEPARATOR . $queueName . '.json'),
-            true
-        ));
+        return count(
+            json_decode(
+                file_get_contents($this->directory . DIRECTORY_SEPARATOR . $queueName . '.json'),
+                true
+            )
+        );
     }
 
     /**
@@ -119,8 +116,7 @@ class SqsFileMock extends Sqs
         $messageBody,
         $delaySeconds = 0,
         array $messageAttributes = []
-    )
-    {
+    ) {
         $id = uniqid();
 
         $this->modifyQueueFile(
@@ -151,8 +147,7 @@ class SqsFileMock extends Sqs
         array $attributeNames = [],
         array $messageAttributeNames = ['All'],
         $visibilityTimeout = null
-    )
-    {
+    ) {
         $receiptHandle = uniqid('receipt_');
 
         $messages = [];
@@ -181,10 +176,10 @@ class SqsFileMock extends Sqs
                     $content[$index][self::KEY_RECEIPT_HANDLES][$receiptHandle] = $visibleAfter;
 
                     $messageData = [
-                        'MessageId'     => $message[self::KEY_ID],
-                        'ReceiptHandle' => $receiptHandle,
-                        'Body'          => $message[self::KEY_BODY],
-                        'MD5OfBody'     => md5($message[self::KEY_BODY]),
+                        'MessageId'         => $message[self::KEY_ID],
+                        'ReceiptHandle'     => $receiptHandle,
+                        'Body'              => $message[self::KEY_BODY],
+                        'MD5OfBody'         => md5($message[self::KEY_BODY]),
                         'MessageAttributes' => $message[self::KEY_ATTRIBUTES],
                     ];
 
@@ -203,27 +198,37 @@ class SqsFileMock extends Sqs
      */
     public function deleteMessage($queueConfigName, $receiptHandle)
     {
-        $this->modifyQueueFile($queueConfigName, function(array $content) use ($receiptHandle) {
-            foreach ($content as $index => $message) {
-                if (array_key_exists($receiptHandle, $message[self::KEY_RECEIPT_HANDLES])) {
-                    unset($content[$index]);
-                    break;
+        $this->modifyQueueFile(
+            $queueConfigName,
+            function (array $content) use ($receiptHandle) {
+                foreach ($content as $index => $message) {
+                    if (array_key_exists($receiptHandle, $message[self::KEY_RECEIPT_HANDLES])) {
+                        unset($content[$index]);
+                        break;
+                    }
                 }
-            }
 
-            return $content;
-        });
+                return $content;
+            }
+        );
     }
 
     /**
-     * @param string   $queueConfigName
+     * @param string $queueConfigName
      * @param callable $contentModifierCallback
      *
      * @return void
      */
     protected function modifyQueueFile($queueConfigName, callable $contentModifierCallback)
     {
-        $handle = fopen($this->directory . DIRECTORY_SEPARATOR . $this->getFileNameFromQueueConfigName($queueConfigName), 'a+');
+        $filePath = $this->directory . DIRECTORY_SEPARATOR . $this->getFileNameFromQueueConfigName($queueConfigName);
+
+        if (!file_exists($filePath)) {
+            touch($filePath);
+            chmod($filePath, 0666);
+        }
+
+        $handle = fopen($filePath, 'a+');
 
         if (!flock($handle, LOCK_EX | LOCK_NB)) {
             fclose($handle);
