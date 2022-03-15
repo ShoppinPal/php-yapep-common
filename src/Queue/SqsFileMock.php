@@ -149,10 +149,10 @@ class SqsFileMock extends Sqs
         $visibilityTimeout = null
     ) {
         $receiptHandle = uniqid('receipt_');
-
-        $messages = [];
-
-        $visibleAfter = time() + ($visibilityTimeout ?: self::DEFAULT_VISIBILITY_TIMEOUT);
+        $messages      = [];
+        $visibleAfter  = time() + (is_null($visibilityTimeout)
+                ? self::DEFAULT_VISIBILITY_TIMEOUT
+                : $visibilityTimeout);
 
         $this->modifyQueueFile(
             $queueConfigName,
