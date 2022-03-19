@@ -53,6 +53,7 @@ class FileLogger extends LoggerAbstract
 
         if (!$this->fileHandler->checkIsPathExists($this->filePath)) {
             $this->fileHandler->touch($this->filePath);
+            $this->fileHandler->changeMode($this->filePath, 0666);
         }
         elseif (!$this->fileHandler->checkIsFile($this->filePath) || !$this->fileHandler->checkIsWritable($this->filePath)) {
             throw new ConfigException('The given path "' . $this->filePath . '" is not a file or not writable!');
