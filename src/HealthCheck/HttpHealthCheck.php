@@ -62,11 +62,25 @@ class HttpHealthCheck implements IHealthCheck
             $url = ($configOptions['scheme'] ?? 'http://') . $url;
         }
 
-        if (!empty($configOptions['path'])) {
-            $url .= '/' . ltrim($configOptions['path'], '/');
-        }
+        $urlParts = parse_url($url);
 
-        return $url;
+        if (($configOptions['replacePathInUrl'] ?? false) && isset($configOptions['path'])) {
+            $urlParts['path'] = $configOptions['path'];
+
+        } elseif (!empty($configOptions['path'])) {
+            $urlParts['path'] = rtrim($urlParts['path']) . '/' . ltrim($configOptions['path'], '/');
+        }
+        $scheme   = isset($urlParts['scheme']) ? $urlParts['scheme'] . '://' : '';
+        $host     = $urlParts['host'] ?? '';
+        $port     = isset($urlParts['port']) ? ':' . $urlParts['port'] : '';
+        $user     = $urlParts['user'] ?? '';
+        $pass     = isset($urlParts['pass']) ? ':' . $urlParts['pass']  : '';
+        $pass     = ($user || $pass) ? "$pass@" : '';
+        $path     = $urlParts['path'] ?? '';
+        $query    = isset($urlParts['query']) ? '?' . $urlParts['query'] : '';
+        $fragment = isset($urlParts['fragment']) ? '#' . $urlParts['fragment'] : '';
+
+        return "$scheme$user$pass$host$port$path$query$fragment";
     }
 
     protected function sendRequest(array $configOptions, string $url): CurlHttpRequestResult
