@@ -107,18 +107,17 @@ abstract class RestApiController extends HttpController
             // This is a standard HTTP exception or a redirect exception, simply re-throw it
             throw $e;
         } catch (\Exception $e) {
-            trigger_error(
-                'Unhandled exception of ' . get_class($e) . ' while serving api response. Error: ' . $e->getMessage(),
-                E_USER_ERROR
-            );
+            $errorHandler = Application::getInstance()->getDiContainer()->getErrorHandlerRegistry();
+
+            $errorHandler->handleException($e);
 
             $view = new RestTemplate();
-            $this->response->setStatusCode(500);
             $view->setContent(
                 $this->getErrorResponse(RestException::CODE_INTERNAL_ERROR, RestException::MSG_INTERNAL_ERROR)
             );
             $view->setContentType($this->response->getContentType());
 
+            $this->response->setStatusCode(500);
             $this->response->setBody($view);
         }
     }
